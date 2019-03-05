@@ -1,0 +1,13 @@
+{
+  "name": "roll20-discord-bot",
+  "description": "This app provides a unidirectional bridge from Roll20 to Discord",
+  "repository": "https://github.com/skepickle/roll20-discord-bot",
+  "buildpacks": [
+    {
+      "url": "https://github.com/heroku/heroku-buildpack-chromedriver"
+    },
+    {
+      "url": "https://github.com/heroku/heroku-buildpack-google-chrome"
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+worker: C:\cygwin\bin\python3.6m.exe roll20bot.py -t %TOKEN% -j %JOURNAL% -c %CHROMEDRIVER_PATH%
