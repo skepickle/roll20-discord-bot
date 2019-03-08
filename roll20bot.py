@@ -41,7 +41,7 @@ def b64_decode(data):
     b64_table = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/="
     i = 0
     result = []
-    if (data is None)
+    if (data is None):
       return data
     data += ""
     while True:
