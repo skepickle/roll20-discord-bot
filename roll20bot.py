@@ -38,8 +38,8 @@ class Roll20BridgeDecoder:
     def __init__(self):
         print("This is the constructor method.")
 
-    @staticmethod
-    def b64_decode(data):
+    @classmethod
+    def b64_decode(cls,data):
         b64_table = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/="
         i = 0
         result = []
@@ -68,15 +68,15 @@ class Roll20BridgeDecoder:
                 break
         return result
 
-    @staticmethod
-    def xor_decrypt(key, data):
+    @classmethod
+    def xor_decrypt(cls,key, data):
         result = []
         for i, datum in enumerate(data):
             result.append(datum ^ ord(key[i % len(key)]))
         return "".join(map(chr,result))
 
-    @staticmethod
-    def utf8_decode(utftext):
+    @classmethod
+    def utf8_decode(cls,utftext):
         string = ""
         i = 0
         c1 = 0
@@ -98,8 +98,8 @@ class Roll20BridgeDecoder:
                 i += 3
         return string
 
-    @staticmethod
-    def decode_roll20_journal(journal,key):
+    @classmethod
+    def decode_roll20_journal(cls,journal,key):
 
         #Define webdriver with path
         options = Options()
@@ -140,7 +140,7 @@ class Roll20BridgeDecoder:
             #Exit script
             exit()
 
-        varJSON = json.loads(utf8_decode(xor_decrypt(key,b64_decode(journal_notes))))
+        varJSON = json.loads(cls.utf8_decode(cls.xor_decrypt(key,cls.b64_decode(journal_notes))))
 
         return varJSON
 
