@@ -37,6 +37,35 @@ print("token   is ", token)
 print("journal is ", journal)
 print("chrome  is ", chrome_path)
 
+def b64_decode(data):
+    b64_table = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/="
+    i = 0
+    result = []
+    if (data is None)
+      return data
+    data += ""
+    while True:
+        h1 = b64_table.index(data[i])
+        i += 1
+        h2 = b64_table.index(data[i])
+        i += 1
+        h3 = b64_table.index(data[i])
+        i += 1
+        h4 = b64_table.index(data[i])
+        i += 1
+        bits = h1 << 18 | h2 << 12 | h3 << 6 | h4
+        o1 = bits >> 16 & 0xFF
+        o2 = bits >> 8 & 0xFF
+        o3 = bits & 0xFF
+        result.append(o1)
+        if (h3 != 64):
+            result.append(o2)
+            if (h4 != 64):
+                result.append(o3)
+        if (i < len(data)):
+            break
+    return result
+
 def get_roll20_json():
 
     #Path to the journal containing the JSON of the players
@@ -108,7 +137,7 @@ async def on_message(message):
         await client.edit_message(tmp, 'You have {} messages.'.format(counter))
     elif message.content.startswith('!json'):
         tmp = await client.send_message(message.channel, 'Retrieving Roll20 JSON...')
-        json = get_roll20_json()
+        json = str(b64_decode(get_roll20_json()))
         await client.edit_message(tmp, 'The roll20 handout json = {}'.format(json)[0:1000])
     elif message.content.startswith('!sleep'):
         await asyncio.sleep(5)
