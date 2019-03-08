@@ -35,7 +35,7 @@ for opt, arg in opts:
 
 class Roll20BridgeDecoder:
 
-    def __init__(self)
+    def __init__(self):
         print("This is the constructor method.")
 
     @staticmethod
