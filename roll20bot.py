@@ -72,6 +72,28 @@ def xor_decrypt(key, data):
         result.append(datum ^ ord(key[i % len(key)]))
     return "".join(map(chr,result))
 
+def utf8_decode(utftext):
+    string = ""
+    i = 0
+    c1 = 0
+    c2 = 0
+    c3 = 0
+    while i < len(utftext):
+        c1 = ord(utftext[i])
+        if c1 < 128:
+            string += map(chr,c1)
+            i += 1
+        elif (c1 > 191) and (c1 < 224):
+            c2 = ord(utftext[i+1])
+            string += map(chr,((c1 & 31) << 6) | (c2 & 63))
+            i += 2
+        else:
+            c2 = ord(utftext[i+1])
+            c3 = ord(utftext[i+2])
+            string += map(chr,((c1 & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63))
+            i += 3
+    return string
+
 def get_roll20_json():
 
     #Path to the journal containing the JSON of the players
@@ -143,7 +165,7 @@ async def on_message(message):
         await client.edit_message(tmp, 'You have {} messages.'.format(counter))
     elif message.content.startswith('!json'):
         tmp = await client.send_message(message.channel, 'Retrieving Roll20 JSON...')
-        json = str(xor_decrypt('SUPER!SECRET~KEY', b64_decode(get_roll20_json())))
+        json = utf8_decode(xor_decrypt('SUPER!SECRET~KEY', b64_decode(get_roll20_json())))
         await client.edit_message(tmp, 'The roll20 handout json = {}'.format(json)[0:1000])
     elif message.content.startswith('!sleep'):
         await asyncio.sleep(5)
