@@ -21,8 +21,8 @@ except getopt.GetoptError:
     print('roll20bot.py -t <Discord Token> -j <Roll20 Journal URL>')
     sys.exit(1)
 for opt, arg in opts:
-    print("opt = ", opt)
-    print("arg = ", arg)
+    #print("opt = ", opt)
+    #print("arg = ", arg)
     if opt == "-h":
         print('roll20bot.py -t <Discord Token> -j <Roll20 Journal URL>')
         sys.exit(1)
@@ -32,10 +32,10 @@ for opt, arg in opts:
         journal = arg
     elif opt in ("-c", "--chrome"):
         chrome_path = arg
-print("left over args = ", args)
-print("token   is ", token)
-print("journal is ", journal)
-print("chrome  is ", chrome_path)
+#print("left over args = ", args)
+#print("token   is ", token)
+#print("journal is ", journal)
+#print("chrome  is ", chrome_path)
 
 def b64_decode(data):
     b64_table = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/="
@@ -144,6 +144,9 @@ def get_roll20_json():
 
 
 client = discord.Client()
+
+for server in client.servers:
+    print(server.name+", "+server.id+"\n")
 
 @client.event
 async def on_ready():
