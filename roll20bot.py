@@ -81,16 +81,16 @@ def utf8_decode(utftext):
     while i < len(utftext):
         c1 = ord(utftext[i])
         if c1 < 128:
-            string += map(chr,c1)
+            string += chr(c1)
             i += 1
         elif (c1 > 191) and (c1 < 224):
             c2 = ord(utftext[i+1])
-            string += map(chr,((c1 & 31) << 6) | (c2 & 63))
+            string += chr(((c1 & 31) << 6) | (c2 & 63))
             i += 2
         else:
             c2 = ord(utftext[i+1])
             c3 = ord(utftext[i+2])
-            string += map(chr,((c1 & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63))
+            string += chr(((c1 & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63))
             i += 3
     return string
 
