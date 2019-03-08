@@ -145,9 +145,6 @@ def get_roll20_json():
 
 client = discord.Client()
 
-for server in client.servers:
-    print(server.name+", "+server.id+"\n")
-
 @client.event
 async def on_ready():
     print('Logged in as')
@@ -164,8 +161,10 @@ async def on_message(message):
         async for log in client.logs_from(message.channel, limit=100):
             if log.author == message.author:
                 counter += 1
-
         await client.edit_message(tmp, 'You have {} messages.'.format(counter))
+    elif message.content.startswith('!discord_debug'):
+        for server in client.servers:
+            print(server.name+", "+server.id+"\n")
     elif message.content.startswith('!json'):
         tmp = await client.send_message(message.channel, 'Retrieving Roll20 JSON...')
         varJSON = json.loads(utf8_decode(xor_decrypt('SUPER!SECRET~KEY',b64_decode(get_roll20_json()))))
