@@ -109,7 +109,7 @@ async def on_message(message):
     elif message.content.startswith('!json'):
         tmp = await client.send_message(message.channel, 'Retrieving Roll20 JSON...')
         json = get_roll20_json()
-        await client.edit_message(tmp, 'The roll20 handout json = {}'.format(json))
+        await client.edit_message(tmp, 'The roll20 handout json = {}'.format(json)[0:1000])
     elif message.content.startswith('!sleep'):
         await asyncio.sleep(5)
         await client.send_message(message.channel, 'Done sleeping')
