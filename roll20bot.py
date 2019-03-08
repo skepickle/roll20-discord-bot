@@ -166,7 +166,7 @@ async def on_message(message):
     elif message.content.startswith('!json'):
         tmp = await client.send_message(message.channel, 'Retrieving Roll20 JSON...')
         varJSON = json.loads(utf8_decode(xor_decrypt('SUPER!SECRET~KEY',b64_decode(get_roll20_json()))))
-        await client.edit_message(tmp, 'The roll20 handout json = {}'.format(str(varJSON))[0:1000])
+        await client.edit_message(tmp, 'The roll20 handout json = {}'.format(json.dumps(varJSON, indent=2, sort_keys=True))[0:2000])
     elif message.content.startswith('!sleep'):
         await asyncio.sleep(5)
         await client.send_message(message.channel, 'Done sleeping')
