@@ -11,6 +11,8 @@ import getopt
 import discord
 import asyncio
 
+# Options parsing
+
 token = ''
 journal = ''
 chrome_path = ''
@@ -21,8 +23,6 @@ except getopt.GetoptError:
     print('roll20bot.py -t <Discord Token> -j <Roll20 Journal URL>')
     sys.exit(1)
 for opt, arg in opts:
-    #print("opt = ", opt)
-    #print("arg = ", arg)
     if opt == "-h":
         print('roll20bot.py -t <Discord Token> -j <Roll20 Journal URL>')
         sys.exit(1)
@@ -32,115 +32,117 @@ for opt, arg in opts:
         journal = arg
     elif opt in ("-c", "--chrome"):
         chrome_path = arg
-#print("left over args = ", args)
-#print("token   is ", token)
-#print("journal is ", journal)
-#print("chrome  is ", chrome_path)
 
-def b64_decode(data):
-    b64_table = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/="
-    i = 0
-    result = []
-    if (data is None):
-      return data
-    data += ""
-    while True:
-        h1 = b64_table.index(data[i])
-        i += 1
-        h2 = b64_table.index(data[i])
-        i += 1
-        h3 = b64_table.index(data[i])
-        i += 1
-        h4 = b64_table.index(data[i])
-        i += 1
-        bits = h1 << 18 | h2 << 12 | h3 << 6 | h4
-        o1 = bits >> 16 & 0xFF
-        o2 = bits >> 8 & 0xFF
-        o3 = bits & 0xFF
-        result.append(o1)
-        if (h3 != 64):
-            result.append(o2)
-            if (h4 != 64):
-                result.append(o3)
-        if (i >= len(data)):
-            break
-    return result
+class Roll20BridgeDecoder:
 
-def xor_decrypt(key, data):
-    result = []
-    for i, datum in enumerate(data):
-        result.append(datum ^ ord(key[i % len(key)]))
-    return "".join(map(chr,result))
+    def __init__(self)
+        print("This is the constructor method.")
 
-def utf8_decode(utftext):
-    string = ""
-    i = 0
-    c1 = 0
-    c2 = 0
-    c3 = 0
-    while i < len(utftext):
-        c1 = ord(utftext[i])
-        if c1 < 128:
-            string += chr(c1)
+    @staticmethod
+    def b64_decode(data):
+        b64_table = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/="
+        i = 0
+        result = []
+        if (data is None):
+          return data
+        data += ""
+        while True:
+            h1 = b64_table.index(data[i])
             i += 1
-        elif (c1 > 191) and (c1 < 224):
-            c2 = ord(utftext[i+1])
-            string += chr(((c1 & 31) << 6) | (c2 & 63))
-            i += 2
-        else:
-            c2 = ord(utftext[i+1])
-            c3 = ord(utftext[i+2])
-            string += chr(((c1 & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63))
-            i += 3
-    return string
+            h2 = b64_table.index(data[i])
+            i += 1
+            h3 = b64_table.index(data[i])
+            i += 1
+            h4 = b64_table.index(data[i])
+            i += 1
+            bits = h1 << 18 | h2 << 12 | h3 << 6 | h4
+            o1 = bits >> 16 & 0xFF
+            o2 = bits >> 8 & 0xFF
+            o3 = bits & 0xFF
+            result.append(o1)
+            if (h3 != 64):
+                result.append(o2)
+                if (h4 != 64):
+                    result.append(o3)
+            if (i >= len(data)):
+                break
+        return result
 
-def get_roll20_json():
+    @staticmethod
+    def xor_decrypt(key, data):
+        result = []
+        for i, datum in enumerate(data):
+            result.append(datum ^ ord(key[i % len(key)]))
+        return "".join(map(chr,result))
 
-    #Path to the journal containing the JSON of the players
-    path_to_external_journal = journal
+    @staticmethod
+    def utf8_decode(utftext):
+        string = ""
+        i = 0
+        c1 = 0
+        c2 = 0
+        c3 = 0
+        while i < len(utftext):
+            c1 = ord(utftext[i])
+            if c1 < 128:
+                string += chr(c1)
+                i += 1
+            elif (c1 > 191) and (c1 < 224):
+                c2 = ord(utftext[i+1])
+                string += chr(((c1 & 31) << 6) | (c2 & 63))
+                i += 2
+            else:
+                c2 = ord(utftext[i+1])
+                c3 = ord(utftext[i+2])
+                string += chr(((c1 & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63))
+                i += 3
+        return string
 
-    #Define webdriver with path
-    options = Options()
-    options.headless = True
-    driver = webdriver.Chrome(executable_path=chrome_path, chrome_options=options)
+    @staticmethod
+    def decode_roll20_journal(journal,key):
 
-    varJSON = ""
-    #Try to run script
-    try:
-        
-        roll20search = re.search('Roll20: Online virtual tabletop', driver.title)
-    
-        #If the title of the page already exists (ie, the window is open), don't open a new one
-        if roll20search:
-        
-            #Get the text from HTML element
-            text = driver.find_element_by_xpath("""//*[@id="openpages"]/div/span""")
-            varJSON = text.text
+        #Define webdriver with path
+        options = Options()
+        options.headless = True
+        driver = webdriver.Chrome(executable_path=chrome_path, chrome_options=options)
 
-        #if chrome window is not open
-        else:
-        
-            #Open URL to roll20 handout
-            driver.get(path_to_external_journal)
-            
-            time.sleep(2)
-            while not varJSON:
+        journal_notes = ""
+        #Try to run script
+        try:
+
+            roll20search = re.search('Roll20: Online virtual tabletop', driver.title)
+
+            #If the title of the page already exists (ie, the window is open), don't open a new one
+            if roll20search:
+
                 #Get the text from HTML element
                 text = driver.find_element_by_xpath("""//*[@id="openpages"]/div/span""")
-                #print(text.text)
-                varJSON = text.text
-                time.sleep(0.5)         
+                journal_notes = text.text
 
-        
-    #If you can't find the chrome window, raise exception and exit script
-    except Exception as e:
-        print(str(e))
-        #Quit driver
-        driver.quit()
-        #Exit script
-        exit()
+            #if chrome window is not open
+            else:
 
-    return varJSON
+                #Open URL to roll20 handout
+                driver.get(journal)
+
+                time.sleep(2)
+                while not journal_notes:
+                    #Get the text from HTML element
+                    text = driver.find_element_by_xpath("""//*[@id="openpages"]/div/span""")
+                    journal_notes = text.text
+                    time.sleep(0.5)
+
+        #If you can't find the chrome window, raise exception and exit script
+        except Exception as e:
+            print(str(e))
+            #Quit driver
+            driver.quit()
+            #Exit script
+            exit()
+
+        varJSON = json.loads(utf8_decode(xor_decrypt(key,b64_decode(journal_notes))))
+
+        return varJSON
 
 
 client = discord.Client()
@@ -167,7 +169,8 @@ async def on_message(message):
             print(server.name+", "+server.id+"\n")
     elif message.content.startswith('!json'):
         tmp = await client.send_message(message.channel, 'Retrieving Roll20 JSON...')
-        varJSON = json.loads(utf8_decode(xor_decrypt('SUPER!SECRET~KEY',b64_decode(get_roll20_json()))))
+        #varJSON = json.loads(utf8_decode(xor_decrypt('SUPER!SECRET~KEY',b64_decode(get_roll20_json()))))
+        varJSON = Roll20BridgeDecoder.decode_roll20_journal(journal,'SUPER!SECRET~KEY')
         await client.edit_message(tmp, 'The roll20 handout json = {}'.format(json.dumps(varJSON, indent=2, sort_keys=True))[0:2000])
     elif message.content.startswith('!sleep'):
         await asyncio.sleep(5)
