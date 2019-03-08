@@ -68,7 +68,7 @@ def b64_decode(data):
 
 def xor_decrypt(key, data):
     result = []
-    for im datum in enumerate(data):
+    for i, datum in enumerate(data):
         result.append(datum ^ ord(key[i % len(key)]))
     return "".join(map(chr,result))
 
