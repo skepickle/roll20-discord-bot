@@ -66,6 +66,12 @@ def b64_decode(data):
             break
     return result
 
+def xor_decrypt(key, data):
+    result = []
+    for im datum in enumerate(data):
+        result.append(datum ^ ord(key[i % len(key)]))
+    return "".join(map(chr,result))
+
 def get_roll20_json():
 
     #Path to the journal containing the JSON of the players
