@@ -62,7 +62,7 @@ def b64_decode(data):
             result.append(o2)
             if (h4 != 64):
                 result.append(o3)
-        if (i < len(data)):
+        if (i >= len(data)):
             break
     return result
 
