@@ -20,11 +20,11 @@ chrome_path = ''
 try:
     opts, args = getopt.getopt(sys.argv[1:], "ht:j:c:", ["token=", "journal=", "chrome="])
 except getopt.GetoptError:
-    print('roll20bot.py -t <Discord Token> -j <Roll20 Journal URL>')
+    print('roll20bot.py -t <Discord Token> -j <Roll20 Journal URL> -c <ChromeDriver Path>')
     sys.exit(1)
 for opt, arg in opts:
     if opt == "-h":
-        print('roll20bot.py -t <Discord Token> -j <Roll20 Journal URL>')
+        print('roll20bot.py -t <Discord Token> -j <Roll20 Journal URL> -c <ChromeDriver Path>')
         sys.exit(1)
     elif opt in ("-t", "--token"):
         token = arg
@@ -35,8 +35,9 @@ for opt, arg in opts:
 
 class Roll20BridgeDecoder:
 
-    def __init__(self):
-        print("This is the constructor method.")
+    #Currently don't need a constructor
+    #def __init__(self):
+    #    print("This is the constructor method.")
 
     @classmethod
     def b64_decode(cls,data):
@@ -48,13 +49,10 @@ class Roll20BridgeDecoder:
         data += ""
         while True:
             h1 = b64_table.index(data[i])
-            i += 1
-            h2 = b64_table.index(data[i])
-            i += 1
-            h3 = b64_table.index(data[i])
-            i += 1
-            h4 = b64_table.index(data[i])
-            i += 1
+            h2 = b64_table.index(data[i+1])
+            h3 = b64_table.index(data[i+2])
+            h4 = b64_table.index(data[i+3])
+            i += 4
             bits = h1 << 18 | h2 << 12 | h3 << 6 | h4
             o1 = bits >> 16 & 0xFF
             o2 = bits >> 8 & 0xFF
@@ -152,6 +150,9 @@ async def on_ready():
     print(client.user.name)
     print(client.user.id)
     print('------')
+    for server in client.servers:
+        print(server.name+", "+server.id+"\n")
+    print('------')
 
 @client.event
 async def on_message(message):
@@ -163,9 +164,6 @@ async def on_message(message):
             if log.author == message.author:
                 counter += 1
         await client.edit_message(tmp, 'You have {} messages.'.format(counter))
-    elif message.content.startswith('!discord_debug'):
-        for server in client.servers:
-            print(server.name+", "+server.id+"\n")
     elif message.content.startswith('!json'):
         tmp = await client.send_message(message.channel, 'Retrieving Roll20 JSON...')
         #varJSON = json.loads(utf8_decode(xor_decrypt('SUPER!SECRET~KEY',b64_decode(get_roll20_json()))))
