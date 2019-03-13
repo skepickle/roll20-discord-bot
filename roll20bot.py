@@ -107,7 +107,6 @@ class Roll20BridgeDecoder:
         driver = webdriver.Chrome(executable_path=chrome_path, chrome_options=options)
 
         journal_notes = ""
-        #Try to run script
         try:
 
             roll20search = re.search('Roll20: Online virtual tabletop', driver.title)
