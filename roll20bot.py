@@ -4,6 +4,7 @@ import time
 import json
 import shutil
 import re
+import os
 
 import sys
 import getopt
@@ -157,13 +158,14 @@ async def on_ready():
 @client.event
 async def on_message(message):
     if message.content.startswith('!test'):
+        #env_str =os.environ
         await client.send_message(message.channel, 'Test Command from {}'.format(message.author))
         counter = 0
         tmp = await client.send_message(message.channel, 'Calculating messages...')
         async for log in client.logs_from(message.channel, limit=100):
             if log.author == message.author:
                 counter += 1
-        await client.edit_message(tmp, 'You have {} messages.'.format(counter))
+        await client.edit_message(tmp, 'You have {} messages.\n{}'.format(counter, os.environ))
     elif message.content.startswith('!json'):
         tmp = await client.send_message(message.channel, 'Retrieving Roll20 JSON...')
         #varJSON = json.loads(utf8_decode(xor_decrypt('SUPER!SECRET~KEY',b64_decode(get_roll20_json()))))
