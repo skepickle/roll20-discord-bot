@@ -14,9 +14,16 @@ import asyncio
 
 # Options parsing
 
-token       = os.environ['DISCORD_TOKEN']     || ''
-journal     = os.environ['ROLL20_JOURNAL']    || ''
-chrome_path = os.environ['CHROMEDRIVER_PATH'] || ''
+token       = ''
+journal     = ''
+chrome_path = ''
+
+if ('DISCORD_TOKEN' in os.environ):
+    token       = os.environ['DISCORD_TOKEN']
+if ('ROLL20_JOURNAL' in os.environ):
+    journal     = os.environ['ROLL20_JOURNAL']
+if ('CHROMEDRIVER_PATH' in os.environ):
+    chrome_path = os.environ['CHROMEDRIVER_PATH']
 
 try:
     opts, args = getopt.getopt(sys.argv[1:], "ht:j:c:", ["token=", "journal=", "chrome="])
