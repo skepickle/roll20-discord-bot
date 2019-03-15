@@ -15,11 +15,13 @@ import asyncio
 
 # Options parsing
 
-token       = ''
-journal     = ''
-chrome_path = ''
+token          = ''
+journal        = ''
+chrome_path    = ''
 
-config = {}
+config = {
+    command_prefix: '!'
+}
 
 if ('DISCORD_TOKEN' in os.environ):
     token       = os.environ['DISCORD_TOKEN']
@@ -154,7 +156,7 @@ class Roll20BridgeDecoder:
 
 
 #client = discord.Client()
-client = commands.Bot(command_prefix='!', description="blah blah")
+client = commands.Bot(command_prefix=config.command_prefix, description="blah blah")
 
 @client.event
 async def on_ready():
@@ -168,7 +170,7 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    if not message.content.startswith('!'):
+    if not message.content.startswith(config.command_prefix):
         return
     await client.send_message(message.channel, 'Entering on_message()')
     if (not message.content.startswith('!test') and
@@ -203,8 +205,7 @@ async def _discordbot_sleep():
 
 @client.command(name='json')
 async def _discordbot_json():
-    tmp = await client.say('Retrieving Roll20 JSON...')
-    await client.say('Starting json command: {}'.format(journal))
+    tmp = await client.say('Retrieving Roll20 JSON {} ...'.format(journal))
     varJSON = Roll20BridgeDecoder.decode_roll20_journal(journal,'SUPER!SECRET~KEY')
     #await client.say('The roll20 handout json = {}'.format(json.dumps(varJSON, indent=2, sort_keys=True))[0:2000])
     await client.edit_message(tmp, 'The roll20 handout json = {}'.format(json.dumps(varJSON, indent=2, sort_keys=True))[0:2000])
