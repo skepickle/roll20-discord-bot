@@ -20,7 +20,7 @@ journal        = ''
 chrome_path    = ''
 
 config = {
-    command_prefix: '!'
+    'command_prefix': '!'
 }
 
 if ('DISCORD_TOKEN' in os.environ):
@@ -156,7 +156,7 @@ class Roll20BridgeDecoder:
 
 
 #client = discord.Client()
-client = commands.Bot(command_prefix=config.command_prefix, description="blah blah")
+client = commands.Bot(command_prefix=config['command_prefix'], description="blah blah")
 
 @client.event
 async def on_ready():
@@ -170,7 +170,7 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    if not message.content.startswith(config.command_prefix):
+    if not message.content.startswith(config['command_prefix']):
         return
     await client.send_message(message.channel, 'Entering on_message()')
     if (not message.content.startswith('!test') and
