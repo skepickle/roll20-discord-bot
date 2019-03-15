@@ -10,6 +10,7 @@ import sys
 import getopt
 
 import discord
+from discord.ext import commands
 import asyncio
 
 # Options parsing
@@ -152,7 +153,9 @@ class Roll20BridgeDecoder:
         return varJSON
 
 
-client = discord.Client()
+#client = discord.Client()
+client = commands.Bot(command_prefix='!', description=description)
+
 
 @client.event
 async def on_ready():
@@ -188,9 +191,14 @@ async def on_message(message):
         #varJSON = json.loads(utf8_decode(xor_decrypt('SUPER!SECRET~KEY',b64_decode(get_roll20_json()))))
         varJSON = Roll20BridgeDecoder.decode_roll20_journal(journal,'SUPER!SECRET~KEY')
         await client.edit_message(tmp, 'The roll20 handout json = {}'.format(json.dumps(varJSON, indent=2, sort_keys=True))[0:2000])
-    elif message.content.startswith('!sleep'):
-        await asyncio.sleep(5)
-        await client.send_message(message.channel, 'Done sleeping')
+    #elif message.content.startswith('!sleep'):
+    #    await asyncio.sleep(5)
+    #    await client.send_message(message.channel, 'Done sleeping')
     await bot.process_commands(message)
+
+@client.command()
+async def sleep():
+    await asyncio.sleep(5)
+    await client.send_message(message.channel, 'Done sleeping')
 
 client.run(token)
