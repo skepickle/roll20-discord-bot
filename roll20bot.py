@@ -156,66 +156,66 @@ class Roll20BridgeDecoder:
 
 
 #client = discord.Client()
-client = commands.Bot(command_prefix=config['command_prefix'], description="blah blah")
+bot = commands.Bot(command_prefix=config['command_prefix'], description="blah blah")
 
-@client.event
+@bot.event
 async def on_ready():
     print('Logged in as')
-    print(client.user.name)
-    print(client.user.id)
+    print(bot.user.name)
+    print(bot.user.id)
     print('------')
-    for server in client.servers:
+    for server in bot.servers:
         print(server.name+", "+server.id+"\n")
     print('------')
 
-@client.event
+@bot.event
 async def on_message(message):
     if not message.content.startswith(config['command_prefix']):
         return
-    await client.send_message(message.channel, 'Entering on_message()')
+    await bot.send_message(message.channel, 'Entering on_message()')
     if (not message.content.startswith('!abc') and
         not message.content.startswith('!def')):
-        await client.send_message(message.channel, 'Not a command for me!')
+        await bot.send_message(message.channel, 'Not a command for me!')
     #if message.content.startswith('!test'):
     #    #env_str =os.environ
-    #    await client.send_message(message.channel, 'Test Command from {}'.format(message.author))
+    #    await bot.send_message(message.channel, 'Test Command from {}'.format(message.author))
     #    counter = 0
-    #    tmp = await client.send_message(message.channel, 'Calculating messages...')
-    #    async for log in client.logs_from(message.channel, limit=100):
+    #    tmp = await bot.send_message(message.channel, 'Calculating messages...')
+    #    async for log in bot.logs_from(message.channel, limit=100):
     #        if log.author == message.author:
     #            counter += 1
-    #    await client.edit_message(tmp, 'You have {} messages.\n{}'.format(counter, os.environ))
+    #    await bot.edit_message(tmp, 'You have {} messages.\n{}'.format(counter, os.environ))
     #    return
     #elif message.content.startswith('!json'):
-    #    tmp = await client.send_message(message.channel, 'Retrieving Roll20 JSON...')
+    #    tmp = await bot.send_message(message.channel, 'Retrieving Roll20 JSON...')
     #    #varJSON = json.loads(utf8_decode(xor_decrypt('SUPER!SECRET~KEY',b64_decode(get_roll20_json()))))
     #    varJSON = Roll20BridgeDecoder.decode_roll20_journal(journal,'SUPER!SECRET~KEY')
-    #    await client.edit_message(tmp, 'The roll20 handout json = {}'.format(json.dumps(varJSON, indent=2, sort_keys=True))[0:2000])
+    #    await bot.edit_message(tmp, 'The roll20 handout json = {}'.format(json.dumps(varJSON, indent=2, sort_keys=True))[0:2000])
     #elif message.content.startswith('!sleep'):
     #    await asyncio.sleep(5)
-    #    await client.send_message(message.channel, 'Done sleeping')
-    await client.process_commands(message)
+    #    await bot.send_message(message.channel, 'Done sleeping')
+    await bot.process_commands(message)
 
-@client.command(pass_context=True, name='sleep')
+@bot.command(pass_context=True, name='sleep')
 async def _discordbot_sleep(ctx):
     await asyncio.sleep(5)
-    await client.say('Done sleeping')
+    await bot.say('Done sleeping')
 
-@client.command(pass_context=True, name='test')
+@bot.command(pass_context=True, name='test')
 async def _discordbot_test(ctx):
-    await client.say('Test Command from {}'.format(ctx.message.author))
+    await bot.say('Test Command from {}'.format(ctx.message.author))
     counter = 0
-    tmp = await client.say('Calculating messages...')
-    async for log in client.logs_from(ctx.message.channel, limit=100):
+    tmp = await bot.say('Calculating messages...')
+    async for log in bot.logs_from(ctx.message.channel, limit=100):
         if log.author == ctx.message.author:
             counter += 1
-    await client.edit_message(tmp, 'You have {} messages.\n{}'.format(counter, os.environ))
+    await bot.edit_message(tmp, 'You have {} messages.\n{}'.format(counter, os.environ))
 
-@client.command(pass_context=True, name='json')
+@bot.command(pass_context=True, name='json')
 async def _discordbot_json(ctx):
-    tmp = await client.say('Retrieving Roll20 JSON {} ...'.format(journal))
+    tmp = await bot.say('Retrieving Roll20 JSON {} ...'.format(journal))
     varJSON = Roll20BridgeDecoder.decode_roll20_journal(journal,'SUPER!SECRET~KEY')
-    #await client.say('The roll20 handout json = {}'.format(json.dumps(varJSON, indent=2, sort_keys=True))[0:2000])
-    await client.edit_message(tmp, 'The roll20 handout json = {}'.format(json.dumps(varJSON, indent=2, sort_keys=True))[0:2000])
+    #await bot.say('The roll20 handout json = {}'.format(json.dumps(varJSON, indent=2, sort_keys=True))[0:2000])
+    await bot.edit_message(tmp, 'The roll20 handout json = {}'.format(json.dumps(varJSON, indent=2, sort_keys=True))[0:2000])
 
-client.run(token)
+bot.run(token)
