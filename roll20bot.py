@@ -21,6 +21,7 @@ chrome_path    = ''
 
 config = {
     'command_prefix': '!'
+    'servers': {}
 }
 
 if ('DISCORD_TOKEN' in os.environ):
@@ -217,5 +218,16 @@ async def _discordbot_json(ctx):
     varJSON = Roll20BridgeDecoder.decode_roll20_journal(journal,'SUPER!SECRET~KEY')
     #await bot.say('The roll20 handout json = {}'.format(json.dumps(varJSON, indent=2, sort_keys=True))[0:2000])
     await bot.edit_message(tmp, 'The roll20 handout json = {}'.format(json.dumps(varJSON, indent=2, sort_keys=True))[0:2000])
+
+@bot.command(pass_context=True, name='list')
+async def _discordbot_list(ctx):
+    s = ''
+    if len(config['servers']) == 0:
+        s = 'There are no Discord servers configured.'
+    else:
+        s = "The following Discord servers are configured:\n"
+        for key, value in config['server'].items():
+            s += "\t" + key + " => " + value + "\n"
+    await bot.say(s)
 
 bot.run(token)
