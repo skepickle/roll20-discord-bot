@@ -20,7 +20,7 @@ journal        = ''
 chrome_path    = ''
 
 config = {
-    'command_prefix': '!'
+    'command_prefix': '!',
     'servers': {}
 }
 
