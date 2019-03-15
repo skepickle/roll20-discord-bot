@@ -203,11 +203,11 @@ async def _discordbot_sleep(ctx):
 
 @client.command(pass_context=True, name='test')
 async def _discordbot_test(ctx):
-    await client.say('Test Command from {}'.format(ctx.author()))
+    await client.say('Test Command from {}'.format(ctx.message.author))
     counter = 0
     tmp = await client.say('Calculating messages...')
     async for log in client.logs_from(ctx.message.channel, limit=100):
-        if log.author == ctx.author():
+        if log.author == ctx.message.author:
             counter += 1
     await client.edit_message(tmp, 'You have {} messages.\n{}'.format(counter, os.environ))
 
