@@ -166,34 +166,34 @@ async def on_ready():
         print(server.name+", "+server.id+"\n")
     print('------')
 
-#@client.event
-#async def on_message(message):
-#    if not message.content.startswith('!'):
-#        return
-#    await client.send_message(message.channel, 'Entering on_message()')
-#    if (not message.content.startswith('!test') and
-#        not message.content.startswith('!json') and
-#        not message.content.startswith('!sleep')):
-#        await client.send_message(message.channel, 'Not a command for me!')
-#        return
-#    if message.content.startswith('!test'):
-#        #env_str =os.environ
-#        await client.send_message(message.channel, 'Test Command from {}'.format(message.author))
-#        counter = 0
-#        tmp = await client.send_message(message.channel, 'Calculating messages...')
-#        async for log in client.logs_from(message.channel, limit=100):
-#            if log.author == message.author:
-#                counter += 1
-#        await client.edit_message(tmp, 'You have {} messages.\n{}'.format(counter, os.environ))
-#    elif message.content.startswith('!json'):
-#        tmp = await client.send_message(message.channel, 'Retrieving Roll20 JSON...')
-#        #varJSON = json.loads(utf8_decode(xor_decrypt('SUPER!SECRET~KEY',b64_decode(get_roll20_json()))))
-#        varJSON = Roll20BridgeDecoder.decode_roll20_journal(journal,'SUPER!SECRET~KEY')
-#        await client.edit_message(tmp, 'The roll20 handout json = {}'.format(json.dumps(varJSON, indent=2, sort_keys=True))[0:2000])
-#    #elif message.content.startswith('!sleep'):
-#    #    await asyncio.sleep(5)
-#    #    await client.send_message(message.channel, 'Done sleeping')
-#    await bot.process_commands(message)
+@client.event
+async def on_message(message):
+    if not message.content.startswith('!'):
+        return
+    await client.send_message(message.channel, 'Entering on_message()')
+    if (not message.content.startswith('!test') and
+        not message.content.startswith('!json') and
+        not message.content.startswith('!sleep')):
+        await client.send_message(message.channel, 'Not a command for me!')
+        return
+    if message.content.startswith('!test'):
+        #env_str =os.environ
+        await client.send_message(message.channel, 'Test Command from {}'.format(message.author))
+        counter = 0
+        tmp = await client.send_message(message.channel, 'Calculating messages...')
+        async for log in client.logs_from(message.channel, limit=100):
+            if log.author == message.author:
+                counter += 1
+        await client.edit_message(tmp, 'You have {} messages.\n{}'.format(counter, os.environ))
+    elif message.content.startswith('!json'):
+        tmp = await client.send_message(message.channel, 'Retrieving Roll20 JSON...')
+        #varJSON = json.loads(utf8_decode(xor_decrypt('SUPER!SECRET~KEY',b64_decode(get_roll20_json()))))
+        varJSON = Roll20BridgeDecoder.decode_roll20_journal(journal,'SUPER!SECRET~KEY')
+        await client.edit_message(tmp, 'The roll20 handout json = {}'.format(json.dumps(varJSON, indent=2, sort_keys=True))[0:2000])
+    #elif message.content.startswith('!sleep'):
+    #    await asyncio.sleep(5)
+    #    await client.send_message(message.channel, 'Done sleeping')
+    await bot.process_commands(message)
 
 @client.command()
 async def sleep():
