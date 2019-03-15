@@ -219,8 +219,13 @@ async def _discordbot_json(ctx):
     #await bot.say('The roll20 handout json = {}'.format(json.dumps(varJSON, indent=2, sort_keys=True))[0:2000])
     await bot.edit_message(tmp, 'The roll20 handout json = {}'.format(json.dumps(varJSON, indent=2, sort_keys=True))[0:2000])
 
-@bot.command(pass_context=True, name='list')
-async def _discordbot_list(ctx):
+@bot.group(pass_context=True, name='admin')
+async def _discordbot_admin(ctx):
+    if ctx.invoked_subcommand is None:
+        await ctx.send('No, {0.subcommand_passed} is not cool'.format(ctx))
+
+@admin.command(pass_context=True, name='list')
+async def _discordbot_admin_list(ctx):
     s = ''
     if len(config['servers']) == 0:
         s = 'There are no Discord servers configured.'
