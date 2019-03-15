@@ -166,11 +166,14 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    #if (!message.content.startswith('!test') and
-    #    !message.content.startswith('!json') and
-    #    !message.content.startswith('!sleep')):
-    #    await client.send_message(message.channel, 'Not a command for me!')
-    #    return
+    await client.send_message(message.channel, 'Entering on_message()')
+    if not message.content.startswith('!'):
+        return
+    if (not message.content.startswith('!test') and
+        not message.content.startswith('!json') and
+        not message.content.startswith('!sleep')):
+        await client.send_message(message.channel, 'Not a command for me!')
+        return
     if message.content.startswith('!test'):
         #env_str =os.environ
         await client.send_message(message.channel, 'Test Command from {}'.format(message.author))
