@@ -234,7 +234,7 @@ async def _discordbot_admin_list(ctx):
         s = 'There are no Discord servers configured.'
     else:
         s = "The following Discord servers are configured:\n"
-        for key, value in config['server'].items():
+        for key, value in config['servers'].items():
             s += "\t" + key + " => " + value['name'] + "\n"
     await bot.say(s)
 
