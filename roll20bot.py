@@ -166,9 +166,9 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    if !message.content.startswith('!test') &&
+    if (!message.content.startswith('!test') &&
        !message.content.startswith('!json') &&
-       !message.content.startswith('!sleep'):
+       !message.content.startswith('!sleep')):
         await client.send_message(message.channel, 'Not a command for me!')
         return
     if message.content.startswith('!test'):
