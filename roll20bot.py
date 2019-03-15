@@ -193,7 +193,7 @@ async def on_message(message):
     #elif message.content.startswith('!sleep'):
     #    await asyncio.sleep(5)
     #    await client.send_message(message.channel, 'Done sleeping')
-    await bot.process_commands(message)
+    await client.process_commands(message)
 
 @client.command()
 async def sleep():
