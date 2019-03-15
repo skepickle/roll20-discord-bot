@@ -224,7 +224,7 @@ async def _discordbot_admin(ctx):
     if ctx.invoked_subcommand is None:
         await ctx.send('No, {0.subcommand_passed} is not cool'.format(ctx))
 
-@admin.command(pass_context=True, name='list')
+@_discordbot_admin.command(pass_context=True, name='list')
 async def _discordbot_admin_list(ctx):
     s = ''
     if len(config['servers']) == 0:
