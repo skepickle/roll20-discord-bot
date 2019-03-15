@@ -201,8 +201,8 @@ async def sleep():
     await asyncio.sleep(5)
     await client.say('Done sleeping')
 
-@client.command()
-async def json():
+@client.command(name='json')
+async def _json():
     #tmp = await client.say('Retrieving Roll20 JSON...')
     await client.say('Starting json command: {}'.format(journal))
     varJSON = await Roll20BridgeDecoder.decode_roll20_journal(journal,'SUPER!SECRET~KEY')
