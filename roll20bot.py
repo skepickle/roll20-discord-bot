@@ -196,16 +196,17 @@ async def on_message(message):
     #    await client.send_message(message.channel, 'Done sleeping')
     await client.process_commands(message)
 
-@client.command()
-async def sleep():
+@client.command(name='sleep')
+async def _discordbot_sleep():
     await asyncio.sleep(5)
     await client.say('Done sleeping')
 
 @client.command(name='json')
-async def _json():
-    #tmp = await client.say('Retrieving Roll20 JSON...')
+async def _discordbot_json():
+    tmp = await client.say('Retrieving Roll20 JSON...')
     await client.say('Starting json command: {}'.format(journal))
     varJSON = Roll20BridgeDecoder.decode_roll20_journal(journal,'SUPER!SECRET~KEY')
-    await client.say('The roll20 handout json = {}'.format(json.dumps(varJSON, indent=2, sort_keys=True))[0:2000])
+    #await client.say('The roll20 handout json = {}'.format(json.dumps(varJSON, indent=2, sort_keys=True))[0:2000])
+    await client.edit_message(tmp, 'The roll20 handout json = {}'.format(json.dumps(varJSON, indent=2, sort_keys=True))[0:2000])
 
 client.run(token)
