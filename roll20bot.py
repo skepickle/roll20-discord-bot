@@ -185,6 +185,7 @@ async def on_message(message):
             if log.author == message.author:
                 counter += 1
         await client.edit_message(tmp, 'You have {} messages.\n{}'.format(counter, os.environ))
+        return
     #elif message.content.startswith('!json'):
     #    tmp = await client.send_message(message.channel, 'Retrieving Roll20 JSON...')
     #    #varJSON = json.loads(utf8_decode(xor_decrypt('SUPER!SECRET~KEY',b64_decode(get_roll20_json()))))
@@ -203,7 +204,7 @@ async def sleep():
 @client.command()
 async def json():
     #tmp = await client.say('Retrieving Roll20 JSON...')
-    await client.say('Starting json command')
+    await client.say('Starting json command: {}'.format(journal))
     varJSON = await Roll20BridgeDecoder.decode_roll20_journal(journal,'SUPER!SECRET~KEY')
     await client.say('The roll20 handout json = {}'.format(json.dumps(varJSON, indent=2, sort_keys=True))[0:2000])
 
