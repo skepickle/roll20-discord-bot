@@ -18,6 +18,8 @@ token       = ''
 journal     = ''
 chrome_path = ''
 
+config = {}
+
 if ('DISCORD_TOKEN' in os.environ):
     token       = os.environ['DISCORD_TOKEN']
 if ('ROLL20_JOURNAL' in os.environ):
@@ -164,6 +166,11 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
+    if !message.content.startswith('!test') &&
+       !message.content.startswith('!json') &&
+       !message.content.startswith('!sleep'):
+        await client.send_message(message.channel, 'Not a command for me!')
+        return
     if message.content.startswith('!test'):
         #env_str =os.environ
         await client.send_message(message.channel, 'Test Command from {}'.format(message.author))
