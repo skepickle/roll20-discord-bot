@@ -154,8 +154,7 @@ class Roll20BridgeDecoder:
 
 
 #client = discord.Client()
-client = commands.Bot(command_prefix='!', description=description)
-
+client = commands.Bot(command_prefix='!', description="blah blah")
 
 @client.event
 async def on_ready():
