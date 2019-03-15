@@ -199,12 +199,22 @@ async def on_message(message):
     await client.process_commands(message)
 
 @client.command(name='sleep')
-async def _discordbot_sleep():
+async def _discordbot_sleep(ctx):
     await asyncio.sleep(5)
     await client.say('Done sleeping')
 
+@client.command(name='test')
+async def _discordbot_test(ctx):
+    await client.say('Test Command from {}'.format(ctx.author))
+    counter = 0
+    tmp = await client.say('Calculating messages...')
+    async for log in client.logs_from(ctx.message.channel, limit=100):
+        if log.author == ctx.author:
+            counter += 1
+    await client.edit_message(tmp, 'You have {} messages.\n{}'.format(counter, os.environ))
+
 @client.command(name='json')
-async def _discordbot_json():
+async def _discordbot_json(ctx):
     tmp = await client.say('Retrieving Roll20 JSON {} ...'.format(journal))
     varJSON = Roll20BridgeDecoder.decode_roll20_journal(journal,'SUPER!SECRET~KEY')
     #await client.say('The roll20 handout json = {}'.format(json.dumps(varJSON, indent=2, sort_keys=True))[0:2000])
