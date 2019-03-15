@@ -202,8 +202,8 @@ async def sleep():
 
 @client.command()
 async def json():
-    tmp = await client.say('Retrieving Roll20 JSON...')
+    #tmp = await client.say('Retrieving Roll20 JSON...')
     varJSON = Roll20BridgeDecoder.decode_roll20_journal(journal,'SUPER!SECRET~KEY')
-    await client.edit_message(tmp, 'The roll20 handout json = {}'.format(json.dumps(varJSON, indent=2, sort_keys=True))[0:2000])
+    await client.say('The roll20 handout json = {}'.format(json.dumps(varJSON, indent=2, sort_keys=True))[0:2000])
 
 client.run(token)
