@@ -167,6 +167,9 @@ async def on_ready():
     print('------')
     for server in bot.servers:
         print(server.name+", "+server.id+"\n")
+        config['servers'][server.id] = {
+            'name': server.name
+        }
     print('------')
 
 @bot.event
@@ -232,7 +235,7 @@ async def _discordbot_admin_list(ctx):
     else:
         s = "The following Discord servers are configured:\n"
         for key, value in config['server'].items():
-            s += "\t" + key + " => " + value + "\n"
+            s += "\t" + key + " => " + value['name'] + "\n"
     await bot.say(s)
 
 bot.run(token)
