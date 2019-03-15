@@ -199,6 +199,6 @@ async def on_message(message):
 @client.command()
 async def sleep():
     await asyncio.sleep(5)
-    await client.send_message(message.channel, 'Done sleeping')
+    await client.say('Done sleeping')
 
 client.run(token)
