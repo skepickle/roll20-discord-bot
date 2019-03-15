@@ -166,9 +166,9 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    await client.send_message(message.channel, 'Entering on_message()')
     if not message.content.startswith('!'):
         return
+    await client.send_message(message.channel, 'Entering on_message()')
     if (not message.content.startswith('!test') and
         not message.content.startswith('!json') and
         not message.content.startswith('!sleep')):
@@ -191,5 +191,6 @@ async def on_message(message):
     elif message.content.startswith('!sleep'):
         await asyncio.sleep(5)
         await client.send_message(message.channel, 'Done sleeping')
+    await bot.process_commands(message)
 
 client.run(token)
