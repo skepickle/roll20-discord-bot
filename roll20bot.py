@@ -176,7 +176,6 @@ async def on_message(message):
     if (not message.content.startswith('!abc') and
         not message.content.startswith('!def')):
         await client.send_message(message.channel, 'Not a command for me!')
-        return
     #if message.content.startswith('!test'):
     #    #env_str =os.environ
     #    await client.send_message(message.channel, 'Test Command from {}'.format(message.author))
