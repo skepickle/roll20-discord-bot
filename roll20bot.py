@@ -225,7 +225,7 @@ async def _discordbot_json(ctx):
 @bot.group(pass_context=True, name='admin')
 async def _discordbot_admin(ctx):
     if ctx.invoked_subcommand is None:
-        await ctx.send('No, {0.subcommand_passed} is not cool'.format(ctx))
+        await bot.say('No, {0.subcommand_passed} is not cool'.format(ctx))
 
 @_discordbot_admin.command(pass_context=True, name='list')
 async def _discordbot_admin_list(ctx):
