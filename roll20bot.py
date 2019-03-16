@@ -222,13 +222,37 @@ async def _discordbot_json(ctx):
     #await bot.say('The roll20 handout json = {}'.format(json.dumps(varJSON, indent=2, sort_keys=True))[0:2000])
     await bot.edit_message(tmp, 'The roll20 handout json = {}'.format(json.dumps(varJSON, indent=2, sort_keys=True))[0:2000])
 
+####################
+# Global Administration Functions
+####################
+
 @bot.group(pass_context=True, name='admin')
 async def _discordbot_admin(ctx):
     if ctx.invoked_subcommand is None:
-        await bot.say('No, {0.subcommand_passed} is not cool'.format(ctx))
+        await bot.say('Print !admin usage here.')
 
 @_discordbot_admin.command(pass_context=True, name='list')
 async def _discordbot_admin_list(ctx):
+    s = ''
+    if len(config['servers']) == 0:
+        s = 'There are no Discord servers configured.'
+    else:
+        s = "The following Discord servers are configured:\n"
+        for key, value in config['servers'].items():
+            s += "\t" + key + " => " + value['name'] + "\n"
+    await bot.say(s)
+
+####################
+# Server Administration Functions
+####################
+
+@bot.group(pass_context=True, name='config')
+async def _discordbot_config(ctx):
+    if ctx.invoked_subcommand is None:
+        await bot.say('Print !config usage here.')
+
+@_discordbot_admin.command(pass_context=True, name='journal')
+async def _discordbot_config_journal(ctx):
     s = ''
     if len(config['servers']) == 0:
         s = 'There are no Discord servers configured.'
