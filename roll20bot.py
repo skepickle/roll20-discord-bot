@@ -166,7 +166,7 @@ async def on_ready():
     print(bot.user.id)
     print('------')
     for server in bot.servers:
-        print("\t"+server.name+", "+server.id)
+        print("    "+server.name+", "+server.id)
         config['servers'][server.id] = {
             'name': server.name
         }
@@ -240,11 +240,11 @@ async def _discordbot_admin_list(ctx):
     else:
         s = "The following Discord servers are configured:\n"
         for key, value in config['servers'].items():
-            s += "\t" + key + " => " + value['name'] + "\n"
+            s += "    " + key + " => " + value['name'] + "\n"
     await bot.say(s)
 
 ####################
-# Server Administration Functions
+# Server Configuration Functions
 ####################
 
 @bot.group(pass_context=True, name='config')
@@ -260,7 +260,7 @@ async def _discordbot_config_journal(ctx):
     else:
         s = "The following Discord servers are configured:\n"
         for key, value in config['servers'].items():
-            s += "\t" + key + " => " + value['name'] + "\n"
+            s += "    " + key + " => " + value['name'] + "\n"
     await bot.say(s)
 
 bot.run(token)
