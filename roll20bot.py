@@ -251,7 +251,7 @@ async def _discordbot_config(ctx):
     if ctx.invoked_subcommand is None:
         await bot.say('Print !config usage here.')
 
-@_discordbot_admin.command(pass_context=True, name='journal')
+@_discordbot_config.command(pass_context=True, name='journal')
 async def _discordbot_config_journal(ctx):
     s = ''
     if len(config['servers']) == 0:
