@@ -228,6 +228,7 @@ async def _discordbot_json(ctx):
 
 @bot.group(pass_context=True, name='admin')
 async def _discordbot_admin(ctx):
+    await bot.say('pew pew')
     if ctx.invoked_subcommand is None:
         await bot.say('Print !admin usage here.')
 
