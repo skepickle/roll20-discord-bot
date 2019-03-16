@@ -166,7 +166,7 @@ async def on_ready():
     print(bot.user.id)
     print('------')
     for server in bot.servers:
-        print(server.name+", "+server.id+"\n")
+        print("\t"+server.name+", "+server.id)
         config['servers'][server.id] = {
             'name': server.name
         }
