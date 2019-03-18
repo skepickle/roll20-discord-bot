@@ -67,12 +67,12 @@ class Roll20Decoder:
         return string
 
     @classmethod
-    def decode_roll20_journal(cls,journal,key):
+    def decode_roll20_journal(cls,chrome,journal,key):
 
         #Define webdriver with path
         options = Options()
         options.headless = True
-        driver = webdriver.Chrome(executable_path=chrome_path, chrome_options=options)
+        driver = webdriver.Chrome(executable_path=chrome, chrome_options=options)
 
         journal_notes = ""
         try:
