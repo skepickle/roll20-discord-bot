@@ -49,7 +49,6 @@ for opt, arg in opts:
     elif opt in ("-c", "--chrome"):
         chrome_path = arg
 
-#client = discord.Client()
 bot = commands.Bot(command_prefix=config['command_prefix'], description="blah blah")
 
 @bot.event
@@ -131,7 +130,6 @@ async def _discordbot_test(ctx):
 @bot.command(pass_context=True, name='json')
 async def _discordbot_json(ctx):
     tmp = await bot.say('Retrieving Roll20 JSON {} ...'.format(journal))
-    #varJSON = Roll20BridgeDecoder.decode_roll20_journal(journal,'SUPER!SECRET~KEY')
     varJSON = Roll20Decoder.decode_roll20_journal(journal,'SUPER!SECRET~KEY')
     #await bot.say('The roll20 handout json = {}'.format(json.dumps(varJSON, indent=2, sort_keys=True))[0:2000])
     await bot.edit_message(tmp, 'The roll20 handout json = {}'.format(json.dumps(varJSON, indent=2, sort_keys=True))[0:2000])
