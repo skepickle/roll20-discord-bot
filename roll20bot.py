@@ -176,6 +176,22 @@ async def on_ready():
     print('------')
 
 @bot.event
+async def on_guild_join(guild):
+    if guild.id not in config['servers']:
+        await bot.say(guild.id + "not in current servers list")
+        config['servers'][guild.id] = {
+            'name': guild.name
+        }
+    return
+
+@bot.event
+async def on_guild_remove(guild):
+    if guild.id in config['servers']:
+        await bot.say(guild.id + " in current servers list")
+        config['servers'].pop(guild.id, None)
+    return
+
+@bot.event
 async def on_message(message):
     if not message.content.startswith(config['command_prefix']):
         return
