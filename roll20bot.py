@@ -1,6 +1,6 @@
-import time
-import shutil
-import re
+#import time
+#import shutil
+#import re
 import os
 import sys
 import getopt
