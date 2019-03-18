@@ -210,7 +210,7 @@ async def _discordbot_sleep(ctx):
 
 @bot.command(pass_context=True, name='test')
 async def _discordbot_test(ctx):
-    await bot.say('Test Command from {}'.format(ctx.message.author))
+    await bot.say('Test Command from {}'.format(str(ctx.message.author)))
     counter = 0
     tmp = await bot.say('Calculating messages...')
     async for log in bot.logs_from(ctx.message.channel, limit=100):
@@ -233,15 +233,15 @@ async def _discordbot_json(ctx):
 async def _discordbot_admin(ctx):
     await bot.say('pew pew:')
     if ctx.invoked_subcommand is None:
-        await bot.say(ctx.message.author.id + ' not in '+ ':'.join(config['admins']))
-        if ctx.message.author.id not in config['admins']:
+        await bot.say(str(ctx.message.author) + ' not in '+ ':'.join(config['admins']))
+        if str(ctx.message.author) not in config['admins']:
             await bot.say('go away! (admin)')
             return
         await bot.say('Print !admin usage here.')
 
 @_discordbot_admin.command(pass_context=True, name='list')
 async def _discordbot_admin_list(ctx):
-    if ctx.message.author not in config['admins']:
+    if str(ctx.message.author) not in config['admins']:
         await bot.say('go away! (admin list)')
         return
     s = ''
