@@ -2,6 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import json
 import re
+import time
 
 class Roll20Decoder:
 
