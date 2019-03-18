@@ -179,10 +179,10 @@ async def on_ready():
 async def on_message(message):
     if not message.content.startswith(config['command_prefix']):
         return
-    await bot.send_message(message.channel, 'Entering on_message()')
-    if (not message.content.startswith('!abc') and
-        not message.content.startswith('!def')):
-        await bot.send_message(message.channel, 'Not a command for me!')
+    #await bot.send_message(message.channel, 'Entering on_message()')
+    #if (not message.content.startswith('!abc') and
+    #    not message.content.startswith('!def')):
+    #    await bot.send_message(message.channel, 'Not a command for me!')
     #if message.content.startswith('!test'):
     #    #env_str =os.environ
     #    await bot.send_message(message.channel, 'Test Command from {}'.format(message.author))
@@ -233,17 +233,17 @@ async def _discordbot_json(ctx):
 async def _discordbot_admin(ctx):
     await bot.say('pew pew:')
     await bot.say(':'.join(config['admins']))
-    if not ctx.message.author in config['admins']:
-        bot.say('go away! ')
+    if ctx.message.author not in config['admins']:
+        bot.say('go away! (admin)')
         return -1
     if ctx.invoked_subcommand is None:
         await bot.say('Print !admin usage here.')
 
 @_discordbot_admin.command(pass_context=True, name='list')
 async def _discordbot_admin_list(ctx):
-    #if not ctx.message.author in config['admins']:
-    #    bot.say('go away!')
-    #    return -1
+    if ctx.message.author not in config['admins']:
+        bot.say('go away! (admin list)')
+        return
     s = ''
     if len(config['servers']) == 0:
         s = 'There are no Discord servers configured.'
