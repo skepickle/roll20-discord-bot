@@ -1,17 +1,16 @@
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
 import time
-import json
 import shutil
 import re
 import os
-
 import sys
 import getopt
 
 import discord
 from discord.ext import commands
 import asyncio
+
+import roll20decoder
+import json
 
 # Options parsing
 
@@ -171,7 +170,9 @@ async def on_ready():
     for server in bot.servers:
         print("    "+server.name+", "+server.id)
         config['servers'][server.id] = {
-            'name': server.name
+            'name': server.name,
+            'adminsRole': '',
+            'usersRole': ''
         }
     print('------')
 
@@ -180,7 +181,9 @@ async def on_guild_join(guild):
     if guild.id not in config['servers']:
         await bot.say(guild.id + "not in current servers list")
         config['servers'][guild.id] = {
-            'name': guild.name
+            'name': guild.name,
+            'adminsRole': '',
+            'usersRole': ''
         }
     return
 
@@ -193,8 +196,8 @@ async def on_guild_remove(guild):
 
 @bot.event
 async def on_message(message):
-    if not message.content.startswith(config['command_prefix']):
-        return
+    #if not message.content.startswith(config['command_prefix']):
+    #    return
     #await bot.send_message(message.channel, 'Entering on_message()')
     #if (not message.content.startswith('!abc') and
     #    not message.content.startswith('!def')):
@@ -237,13 +240,16 @@ async def _discordbot_test(ctx):
 @bot.command(pass_context=True, name='json')
 async def _discordbot_json(ctx):
     tmp = await bot.say('Retrieving Roll20 JSON {} ...'.format(journal))
-    varJSON = Roll20BridgeDecoder.decode_roll20_journal(journal,'SUPER!SECRET~KEY')
+    #varJSON = Roll20BridgeDecoder.decode_roll20_journal(journal,'SUPER!SECRET~KEY')
+    varJSON = Roll20Decoder.decode_roll20_journal(journal,'SUPER!SECRET~KEY')
     #await bot.say('The roll20 handout json = {}'.format(json.dumps(varJSON, indent=2, sort_keys=True))[0:2000])
     await bot.edit_message(tmp, 'The roll20 handout json = {}'.format(json.dumps(varJSON, indent=2, sort_keys=True))[0:2000])
 
 ####################
 # Global Administration Functions
 ####################
+
+# Global admins are defined at deployment of the bot, and cannot be modified live.
 
 @bot.group(pass_context=True, name='admin')
 async def _discordbot_admin(ctx):
@@ -272,6 +278,9 @@ async def _discordbot_admin_list(ctx):
 ####################
 # Server Configuration Functions
 ####################
+
+# Server Owners should always be able to modify these configurations
+# If a role is defined for administrators, then the members of that role will also be able to modify server configs
 
 @bot.group(pass_context=True, name='config')
 async def _discordbot_config(ctx):
