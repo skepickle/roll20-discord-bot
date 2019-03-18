@@ -234,7 +234,7 @@ async def _discordbot_admin(ctx):
     await bot.say('pew pew:')
     await bot.say(':'.join(config['admins']))
     if ctx.message.author not in config['admins']:
-        bot.say('go away! (admin)')
+        await bot.say('go away! (admin)')
         return -1
     if ctx.invoked_subcommand is None:
         await bot.say('Print !admin usage here.')
@@ -242,7 +242,7 @@ async def _discordbot_admin(ctx):
 @_discordbot_admin.command(pass_context=True, name='list')
 async def _discordbot_admin_list(ctx):
     if ctx.message.author not in config['admins']:
-        bot.say('go away! (admin list)')
+        await bot.say('go away! (admin list)')
         return
     s = ''
     if len(config['servers']) == 0:
