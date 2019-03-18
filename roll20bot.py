@@ -232,11 +232,11 @@ async def _discordbot_json(ctx):
 @bot.group(pass_context=True, name='admin')
 async def _discordbot_admin(ctx):
     await bot.say('pew pew:')
-    await bot.say(':'.join(config['admins']))
-    if ctx.message.author not in config['admins']:
-        await bot.say('go away! (admin)')
-        return -1
     if ctx.invoked_subcommand is None:
+        await bot.say(':'.join(config['admins']))
+        if ctx.message.author not in config['admins']:
+            await bot.say('go away! (admin)')
+            return
         await bot.say('Print !admin usage here.')
 
 @_discordbot_admin.command(pass_context=True, name='list')
