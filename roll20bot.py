@@ -232,14 +232,17 @@ async def _discordbot_json(ctx):
 @bot.group(pass_context=True, name='admin')
 async def _discordbot_admin(ctx):
     await bot.say('pew pew')
-    if ctx.message.author in config['admins']:
-        bot.say('go away!')
+    if not ctx.message.author in config['admins']:
+        bot.say('go away! ' + config['admins'])
         return -1
     if ctx.invoked_subcommand is None:
         await bot.say('Print !admin usage here.')
 
 @_discordbot_admin.command(pass_context=True, name='list')
 async def _discordbot_admin_list(ctx):
+    if not ctx.message.author in config['admins']:
+        bot.say('go away!')
+        return -1
     s = ''
     if len(config['servers']) == 0:
         s = 'There are no Discord servers configured.'
