@@ -21,7 +21,8 @@ chrome_path    = ''
 
 config = {
     'command_prefix': '!',
-    'servers': {}
+    'servers': {},
+    'admins': []
 }
 
 if ('DISCORD_TOKEN' in os.environ):
@@ -30,6 +31,8 @@ if ('ROLL20_JOURNAL' in os.environ):
     journal     = os.environ['ROLL20_JOURNAL']
 if ('CHROMEDRIVER_PATH' in os.environ):
     chrome_path = os.environ['CHROMEDRIVER_PATH']
+if ('GLOBAL_ADMINS' in os.environ):
+    config['admins'] = os.environ['GLOBAL_ADMINS'].split(':')
 
 try:
     opts, args = getopt.getopt(sys.argv[1:], "ht:j:c:", ["token=", "journal=", "chrome="])
@@ -229,6 +232,9 @@ async def _discordbot_json(ctx):
 @bot.group(pass_context=True, name='admin')
 async def _discordbot_admin(ctx):
     await bot.say('pew pew')
+    if ctx.message.author in config['admins']:
+        bot.say('go away!')
+        return -1
     if ctx.invoked_subcommand is None:
         await bot.say('Print !admin usage here.')
 
