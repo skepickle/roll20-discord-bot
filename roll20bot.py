@@ -233,7 +233,7 @@ async def _discordbot_json(ctx):
 async def _discordbot_admin(ctx):
     await bot.say('pew pew:')
     if ctx.invoked_subcommand is None:
-        await bot.say(str(ctx.message.author) + ' not in '+ ':'.join(config['admins']))
+        await bot.say(str(ctx.message.author) + ' in '+ ':'.join(config['admins']) + " ?")
         if str(ctx.message.author) not in config['admins']:
             await bot.say('go away! (admin)')
             return
