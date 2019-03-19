@@ -31,9 +31,15 @@ config = {
        'servers': {
            '__str:server_id__': {
                'name': str,
-               'handout_url': str,
                'adminRole': str,
-               'userRole': str
+               'userRole': str,
+               'handout_url': str,
+               'handout': dict
+           }
+       },
+       'users': {
+           '__str:user_id__': {
+               servers: []
            }
        }
    }
@@ -129,6 +135,25 @@ async def on_message(message):
     #    await bot.send_message(message.channel, 'Done sleeping')
     await bot.process_commands(message)
 
+@bot.command(pass_context=True, name='help')
+async def _discordbot_help(ctx)
+    if ctx.message.server == None:
+        bot.say('''
+            Usage:
+
+            characters
+            sleep
+            test
+            json
+            ''')
+    else:
+        pass
+    pass
+
+@bot.command(pass_context=True, name='characters')
+async def _discordbot_characters(ctx)
+    pass
+
 @bot.command(pass_context=True, name='sleep')
 async def _discordbot_sleep(ctx):
     await asyncio.sleep(5)
@@ -193,6 +218,7 @@ def is_server_admin(ctx):
         return False
     if ctx.message.author == ctx.message.server.owner:
         return True
+    # TODO Also check admin role on server...
     return False
 
 @bot.group(pass_context=True, name='config')
