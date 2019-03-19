@@ -148,7 +148,7 @@ async def _discordbot_json(ctx):
     varJSON = roll20decoder.decode_roll20_journal(chrome_path, journal, 'SUPER!SECRET~KEY')
     #await bot.say('The roll20 handout json = {}'.format(json.dumps(varJSON, indent=2, sort_keys=True))[0:2000])
     await bot.edit_message(tmp, 'The roll20 handout json = {}'.format(json.dumps(varJSON, indent=2, sort_keys=True))[0:2000])
-    await bot.say('**attributes:**\n{}'.format(', '.join(varJSON['siliceous#5311']['Chirk Chorster']['attributes'].keys())))
+    await bot.say('**attributes:**\n{}'.format(', '.join(varJSON['siliceous#5311']['Chirk Chorster']['attributes'].keys()))[0:2000])
 
 ####################
 # Global Administration Functions
