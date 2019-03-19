@@ -135,6 +135,7 @@ async def _discordbot_sleep(ctx):
     await bot.say('Done sleeping')
 
 @bot.command(pass_context=True, name='test')
+@is_global_admin()
 async def _discordbot_test(ctx):
     await bot.say('Test Command from {}'.format(str(ctx.message.author)))
     counter = 0
