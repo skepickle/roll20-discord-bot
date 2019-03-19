@@ -20,9 +20,24 @@ chrome_path    = ''
 
 config = {
     'command_prefix': '!',
-    'servers': {},
-    'admins': []
+    'admins': [],
+    'servers': {}
 }
+
+"""
+   config = {
+       'command_prefix': char,
+       'admins': [ str ],
+       'servers': {
+           '__str:server_id__': {
+               'name': str,
+               'handout_url': str,
+               'adminRole': str,
+               'userRole': str
+           }
+       }
+   }
+"""
 
 if ('DISCORD_TOKEN' in os.environ):
     token       = os.environ['DISCORD_TOKEN']
@@ -133,6 +148,7 @@ async def _discordbot_json(ctx):
     varJSON = roll20decoder.decode_roll20_journal(chrome_path, journal, 'SUPER!SECRET~KEY')
     #await bot.say('The roll20 handout json = {}'.format(json.dumps(varJSON, indent=2, sort_keys=True))[0:2000])
     await bot.edit_message(tmp, 'The roll20 handout json = {}'.format(json.dumps(varJSON, indent=2, sort_keys=True))[0:2000])
+    await bot.say('**attributes:**\n{}'.format(', '.join(json['siliceous#5311']['Chirk Chorster']['attributes'].keys())))
 
 ####################
 # Global Administration Functions
