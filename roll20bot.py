@@ -189,7 +189,7 @@ async def _discordbot_admin_list(ctx):
 # If a role is defined for administrators, then the members of that role will also be able to modify server configs
 
 def is_server_admin(ctx):
-    if not ctx.message.server == None:
+    if ctx.message.server == None:
         return False
     if ctx.message.author == ctx.message.server.owner:
         return True
