@@ -163,7 +163,7 @@ async def _discordbot_json(ctx):
 # Global admins are defined at deployment of the bot, and cannot be modified live.
 
 @bot.group(pass_context=True, name='admin')
-@is_global_admin()
+@commands.check(is_global_admin)
 async def _discordbot_admin(ctx):
     if str(ctx.message.author) not in config['admins']:
         await bot.say('go away! (admin)')
@@ -172,7 +172,7 @@ async def _discordbot_admin(ctx):
         await bot.say('TODO: Print !admin usage here.')
 
 @_discordbot_admin.command(pass_context=True, name='list')
-@is_global_admin()
+@commands.check(is_global_admin)
 async def _discordbot_admin_list(ctx):
     if str(ctx.message.author) not in config['admins']:
         await bot.say('go away! (admin list)')
