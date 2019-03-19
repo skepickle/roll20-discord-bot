@@ -135,8 +135,8 @@ async def on_message(message):
     #    await bot.send_message(message.channel, 'Done sleeping')
     await bot.process_commands(message)
 
-@bot.command(pass_context=True, name='help')
-async def _discordbot_help(ctx):
+@bot.command(pass_context=True, name='helpme')
+async def _discordbot_helpme(ctx):
     if ctx.message.server == None:
         bot.say('''
             Usage:
