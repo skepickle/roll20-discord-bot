@@ -7,7 +7,6 @@ import getopt
 
 import discord
 from discord.ext import commands
-from discord.ext.commands import help
 import asyncio
 
 import roll20decoder
@@ -74,7 +73,7 @@ for opt, arg in opts:
     elif opt in ("-c", "--chrome"):
         chrome_path = arg
 
-bot = commands.Bot(command_prefix=config['command_prefix'], help_command=DefaultHelpCommand(dm_help=True), description="blah blah")
+bot = commands.Bot(command_prefix=config['command_prefix'], help_command=None, description="blah blah")
 
 @bot.event
 async def on_ready():
