@@ -148,7 +148,7 @@ async def _discordbot_sleep(ctx):
     await bot.say('Done sleeping')
 
 @bot.command(pass_context=True, name='test', usage='USAGE BLAH BLAH', description='DESCRIPTION BLAH BLAH', help='Print out server side environment variables')
-async def _discordbot_test(ctx):
+async def _discordbot_test(ctx, arg_1='1', arg_2='2'):
     await bot.say('Test Command from {}'.format(str(ctx.message.author)))
     counter = 0
     tmp = await bot.say('Calculating messages...')
