@@ -197,14 +197,14 @@ def is_server_admin(ctx):
 
 @bot.group(pass_context=True, name='config')
 async def _discordbot_config(ctx):
-    if is_server_admin(ctx):
+    if not is_server_admin(ctx):
         return
     if ctx.invoked_subcommand is None:
         await bot.say('Print !config usage here.')
 
 @_discordbot_config.command(pass_context=True, name='journal')
 async def _discordbot_config_journal(ctx):
-    if is_server_admin(ctx):
+    if not is_server_admin(ctx):
         return
     s = ''
     if len(config['servers']) == 0:
