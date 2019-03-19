@@ -134,6 +134,11 @@ async def _discordbot_sleep(ctx):
     await asyncio.sleep(5)
     await bot.say('Done sleeping')
 
+def is_global_admin():
+    def predicate(ctx):
+        return ctx.message.author in config['admins']
+    return commands.check(predicate)
+
 @bot.command(pass_context=True, name='test')
 @is_global_admin()
 async def _discordbot_test(ctx):
@@ -158,11 +163,6 @@ async def _discordbot_json(ctx):
 ####################
 
 # Global admins are defined at deployment of the bot, and cannot be modified live.
-
-def is_global_admin():
-    def predicate(ctx):
-        return ctx.message.author in config['admins']
-    return commands.check(predicate)
 
 @bot.group(pass_context=True, name='admin')
 @is_global_admin()
