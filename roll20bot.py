@@ -135,21 +135,6 @@ async def on_message(message):
     #    await bot.send_message(message.channel, 'Done sleeping')
     await bot.process_commands(message)
 
-@bot.command(pass_context=True, name='helpme')
-async def _discordbot_helpme(ctx):
-    if ctx.message.server == None:
-        bot.say('''
-            Usage:
-
-            characters
-            sleep
-            test
-            json
-            ''')
-    else:
-        pass
-    pass
-
 @bot.command(pass_context=True, name='characters')
 async def _discordbot_characters(ctx):
     pass
@@ -159,7 +144,7 @@ async def _discordbot_sleep(ctx):
     await asyncio.sleep(5)
     await bot.say('Done sleeping')
 
-@bot.command(pass_context=True, name='test')
+@bot.command(pass_context=True, name='test', help='Print out server side environment variables')
 async def _discordbot_test(ctx):
     await bot.say('Test Command from {}'.format(str(ctx.message.author)))
     counter = 0
