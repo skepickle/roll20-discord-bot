@@ -32,8 +32,11 @@ config = {
            '__str:server_id__': {
                'name': str,
                'adminRole': str,
-               'userRole': str,
-               'handout_url': str,
+               'gamemasterRole': str,
+               'playerRole': str,
+               'handoutURL': str,
+               'handoutKey': str,
+               'handoutTimestamp': time and date,
                'handout': dict
            }
        },
@@ -83,7 +86,7 @@ async def on_ready():
         config['servers'][server.id] = {
             'name': server.name,
             'adminRole': '',
-            'userRole': ''
+            'palyerRole': ''
         }
     print('------')
 
@@ -144,7 +147,7 @@ async def _discordbot_sleep(ctx):
     await asyncio.sleep(5)
     await bot.say('Done sleeping')
 
-@bot.command(pass_context=True, name='test', help='Print out server side environment variables')
+@bot.command(pass_context=True, name='test', usage='USAGE BLAH BLAH', description='DESCRIPTION BLAH BLAH', help='Print out server side environment variables')
 async def _discordbot_test(ctx):
     await bot.say('Test Command from {}'.format(str(ctx.message.author)))
     counter = 0
