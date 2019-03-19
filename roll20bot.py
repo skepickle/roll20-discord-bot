@@ -73,8 +73,7 @@ for opt, arg in opts:
     elif opt in ("-c", "--chrome"):
         chrome_path = arg
 
-bot = commands.Bot(command_prefix=config['command_prefix'], description="blah blah")
-bot.help_command().dm_help = True
+bot = commands.Bot(command_prefix=config['command_prefix'], help_command=discord.ext.commands.DefaultHelpCommand(dm_help=True), description="blah blah")
 
 @bot.event
 async def on_ready():
