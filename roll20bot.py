@@ -76,8 +76,8 @@ async def on_ready():
         print("    "+server.name+", "+server.id)
         config['servers'][server.id] = {
             'name': server.name,
-            'adminsRole': '',
-            'usersRole': ''
+            'adminRole': '',
+            'userRole': ''
         }
     print('------')
 
@@ -101,6 +101,8 @@ async def on_guild_remove(guild):
 
 @bot.event
 async def on_message(message):
+    if message.author.bot:
+        return
     #if not message.content.startswith(config['command_prefix']):
     #    return
     #await bot.send_message(message.channel, 'Entering on_message()')
@@ -158,13 +160,12 @@ async def _discordbot_json(ctx):
 
 @bot.group(pass_context=True, name='admin')
 async def _discordbot_admin(ctx):
-    await bot.say('pew pew:')
+    if str(ctx.message.author) not in config['admins']:
+        await bot.say('go away! (admin)')
+        ctx.command_failed = True
+        return
     if ctx.invoked_subcommand is None:
-        await bot.say(str(ctx.message.author) + ' in '+ ':'.join(config['admins']) + " ?")
-        if str(ctx.message.author) not in config['admins']:
-            await bot.say('go away! (admin)')
-            return
-        await bot.say('Print !admin usage here.')
+        await bot.say('TODO: Print !admin usage here.')
 
 @_discordbot_admin.command(pass_context=True, name='list')
 async def _discordbot_admin_list(ctx):
@@ -189,6 +190,8 @@ async def _discordbot_admin_list(ctx):
 
 @bot.group(pass_context=True, name='config')
 async def _discordbot_config(ctx):
+    #if str(ctx.message.author) not in config[ctx.message.server]:
+    #    return
     if ctx.invoked_subcommand is None:
         await bot.say('Print !config usage here.')
 
