@@ -4,7 +4,7 @@ import json
 import re
 import time
 
-def b64_decode(cls,data):
+def b64_decode(data):
     b64_table = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/="
     i = 0
     result = []
@@ -30,13 +30,13 @@ def b64_decode(cls,data):
             break
     return result
 
-def xor_decrypt(cls,key, data):
+def xor_decrypt(key, data):
     result = []
     for i, datum in enumerate(data):
         result.append(datum ^ ord(key[i % len(key)]))
     return "".join(map(chr,result))
 
-def utf8_decode(cls,utftext):
+def utf8_decode(utftext):
     string = ""
     i = 0
     c1 = 0
@@ -58,7 +58,7 @@ def utf8_decode(cls,utftext):
             i += 3
     return string
 
-def decode_roll20_journal(cls,chrome,journal,key):
+def decode_roll20_journal(chrome,journal,key):
 
     #Define webdriver with path
     options = Options()
