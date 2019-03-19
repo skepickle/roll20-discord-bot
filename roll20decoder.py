@@ -98,6 +98,6 @@ def decode_roll20_journal(chrome,journal,key):
         #Exit script
         exit()
 
-    varJSON = json.loads(cls.utf8_decode(cls.xor_decrypt(key,cls.b64_decode(journal_notes))))
+    varJSON = json.loads(utf8_decode(xor_decrypt(key,b64_decode(journal_notes))))
 
     return varJSON
