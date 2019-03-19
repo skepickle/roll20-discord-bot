@@ -45,8 +45,8 @@ if ('ROLL20_JOURNAL' in os.environ):
     journal     = os.environ['ROLL20_JOURNAL']
 if ('CHROMEDRIVER_PATH' in os.environ):
     chrome_path = os.environ['CHROMEDRIVER_PATH']
-if ('GLOBAL_ADMINS' in os.environ):
-    config['admins'] = os.environ['GLOBAL_ADMINS'].split(':')
+if ('BOT_ADMINS' in os.environ):
+    config['admins'] = os.environ['BOT_ADMINS'].split(':')
 
 try:
     opts, args = getopt.getopt(sys.argv[1:], "ht:j:c:", ["token=", "journal=", "chrome="])
@@ -134,11 +134,7 @@ async def _discordbot_sleep(ctx):
     await asyncio.sleep(5)
     await bot.say('Done sleeping')
 
-def is_global_admin(ctx):
-    return str(ctx.message.author) in config['admins']
-
 @bot.command(pass_context=True, name='test')
-@commands.check(is_global_admin)
 async def _discordbot_test(ctx):
     await bot.say('Test Command from {}'.format(str(ctx.message.author)))
     counter = 0
@@ -157,25 +153,24 @@ async def _discordbot_json(ctx):
     await bot.say('**attributes:**\n{}'.format(', '.join(varJSON['siliceous#5311']['Chirk Chorster']['attributes'].keys()))[0:2000])
 
 ####################
-# Global Administration Functions
+# Bot Administration Functions
 ####################
 
-# Global admins are defined at deployment of the bot, and cannot be modified live.
+# Bot admins are defined at deployment of the bot, and cannot be modified live.
+
+def is_bot_admin(ctx):
+    return str(ctx.message.author) in config['admins']
 
 @bot.group(pass_context=True, name='admin')
-@commands.check(is_global_admin)
 async def _discordbot_admin(ctx):
-    if str(ctx.message.author) not in config['admins']:
-        await bot.say('go away! (admin)')
+    if not is_bot_admin(ctx):
         return
     if ctx.invoked_subcommand is None:
         await bot.say('TODO: Print !admin usage here.')
 
 @_discordbot_admin.command(pass_context=True, name='list')
-@commands.check(is_global_admin)
 async def _discordbot_admin_list(ctx):
-    if str(ctx.message.author) not in config['admins']:
-        await bot.say('go away! (admin list)')
+    if not is_bot_admin(ctx):
         return
     s = ''
     if len(config['servers']) == 0:
@@ -193,15 +188,24 @@ async def _discordbot_admin_list(ctx):
 # Server Owners should always be able to modify these configurations
 # If a role is defined for administrators, then the members of that role will also be able to modify server configs
 
+def is_server_admin(ctx):
+    if not ctx.message.server == None:
+        return False
+    if ctx.message.author == ctx.message.server.owner:
+        return True
+    return False
+
 @bot.group(pass_context=True, name='config')
 async def _discordbot_config(ctx):
-    #if str(ctx.message.author) not in config[ctx.message.server]:
-    #    return
+    if is_server_admin(ctx):
+        return
     if ctx.invoked_subcommand is None:
         await bot.say('Print !config usage here.')
 
 @_discordbot_config.command(pass_context=True, name='journal')
 async def _discordbot_config_journal(ctx):
+    if is_server_admin(ctx):
+        return
     s = ''
     if len(config['servers']) == 0:
         s = 'There are no Discord servers configured.'
