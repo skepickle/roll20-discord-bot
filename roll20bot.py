@@ -7,6 +7,7 @@ import getopt
 
 import discord
 from discord.ext import commands
+from discord.ext.commands import help
 import asyncio
 
 import roll20decoder
