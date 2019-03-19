@@ -147,7 +147,7 @@ async def _discordbot_sleep(ctx):
     await asyncio.sleep(5)
     await bot.say('Done sleeping')
 
-@bot.command(pass_context=True, name='test', usage='test [arg_1=A] [arg_2=B]', description='DESCRIPTION BLAH BLAH', help='Print out server side environment variables')
+@bot.command(pass_context=True, name='test', description='DESCRIPTION BLAH BLAH', brief='print env vars', help='Print out server side environment variables')
 async def _discordbot_test(ctx, arg_1='1', arg_2='2'):
     await bot.say('Test Command from {}'.format(str(ctx.message.author)))
     counter = 0
