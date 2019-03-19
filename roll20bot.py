@@ -130,7 +130,7 @@ async def _discordbot_test(ctx):
 @bot.command(pass_context=True, name='json')
 async def _discordbot_json(ctx):
     tmp = await bot.say('Retrieving Roll20 JSON {} ...'.format(journal))
-    varJSON = roll20decoder.Roll20Decoder.decode_roll20_journal(chrome_path, journal,'SUPER!SECRET~KEY')
+    varJSON = roll20decoder.decode_roll20_journal(chrome_path, journal,'SUPER!SECRET~KEY')
     #await bot.say('The roll20 handout json = {}'.format(json.dumps(varJSON, indent=2, sort_keys=True))[0:2000])
     await bot.edit_message(tmp, 'The roll20 handout json = {}'.format(json.dumps(varJSON, indent=2, sort_keys=True))[0:2000])
 
