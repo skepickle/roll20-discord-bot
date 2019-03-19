@@ -4,11 +4,6 @@ import json
 import re
 import time
 
-#Currently don't need a constructor
-#def __init__(self):
-#    print("This is the constructor method.")
-
-@classmethod
 def b64_decode(cls,data):
     b64_table = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/="
     i = 0
@@ -35,14 +30,12 @@ def b64_decode(cls,data):
             break
     return result
 
-@classmethod
 def xor_decrypt(cls,key, data):
     result = []
     for i, datum in enumerate(data):
         result.append(datum ^ ord(key[i % len(key)]))
     return "".join(map(chr,result))
 
-@classmethod
 def utf8_decode(cls,utftext):
     string = ""
     i = 0
@@ -65,7 +58,6 @@ def utf8_decode(cls,utftext):
             i += 3
     return string
 
-@classmethod
 def decode_roll20_journal(cls,chrome,journal,key):
 
     #Define webdriver with path
