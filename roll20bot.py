@@ -134,13 +134,11 @@ async def _discordbot_sleep(ctx):
     await asyncio.sleep(5)
     await bot.say('Done sleeping')
 
-def is_global_admin():
-    def predicate(ctx):
-        return ctx.message.author in config['admins']
-    return commands.check(predicate)
+def is_global_admin(ctx):
+    return ctx.message.author in config['admins']
 
 @bot.command(pass_context=True, name='test')
-@is_global_admin()
+@commands.check(is_global_admin)
 async def _discordbot_test(ctx):
     await bot.say('Test Command from {}'.format(str(ctx.message.author)))
     counter = 0
