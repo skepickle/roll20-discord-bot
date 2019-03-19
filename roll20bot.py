@@ -164,6 +164,7 @@ def is_global_admin():
     return commands.check(predicate)
 
 @bot.group(pass_context=True, name='admin')
+@is_global_admin()
 async def _discordbot_admin(ctx):
     if str(ctx.message.author) not in config['admins']:
         await bot.say('go away! (admin)')
