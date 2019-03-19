@@ -135,7 +135,7 @@ async def _discordbot_sleep(ctx):
     await bot.say('Done sleeping')
 
 def is_global_admin(ctx):
-    return ctx.message.author in config['admins']
+    return str(ctx.message.author) in config['admins']
 
 @bot.command(pass_context=True, name='test')
 @commands.check(is_global_admin)
