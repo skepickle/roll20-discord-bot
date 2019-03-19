@@ -74,6 +74,7 @@ for opt, arg in opts:
         chrome_path = arg
 
 bot = commands.Bot(command_prefix=config['command_prefix'], description="blah blah")
+bot.help_command().dm_help = True
 
 @bot.event
 async def on_ready():
