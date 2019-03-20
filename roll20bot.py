@@ -74,6 +74,7 @@ for opt, arg in opts:
         chrome_path = arg
 
 bot = commands.Bot(command_prefix=config['command_prefix'], description="blah blah")
+bot.pm_help = True;
 print(bot.__dict__)
 
 
