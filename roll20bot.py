@@ -240,8 +240,8 @@ async def _discordbot_guild_handout(ctx, url=None, key=None):
             s += config['guilds'][ctx.message.server.id]['handoutKey']
         else:
             s += 'UNDEFINED'
-       await bot.say(s)
-       return
+        await bot.say(s)
+        return
     if (url != None):
         config['guilds'][ctx.message.server.id]['handoutURL'] = url
     if (key != None):
