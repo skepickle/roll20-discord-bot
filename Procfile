@@ -1,1 +1,1 @@
-worker: python3 roll20bot.py
+worker: python3 bot.py

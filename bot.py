@@ -9,7 +9,7 @@ import discord
 from discord.ext import commands
 import asyncio
 
-import roll20decoder
+import roll20bridge
 import json
 
 # Options parsing
@@ -34,15 +34,16 @@ config = {
                'adminRole': str,
                'gamemasterRole': str,
                'playerRole': str,
-               'handoutURL': str,
-               'handoutKey': str,
-               'handoutTimestamp': time and date,
-               'handout': dict
+               'bridgeURL': str,
+               'bridgeKey': str,
+               'bridgeTimestamp': time and date,
+               'characters': Roll20Character[]
            }
        },
-       'users': {
+       'players': {
            '__str:user_id__': {
-               guilds: []
+               'guilds': [],
+               'characters': []
            }
        }
    }
@@ -50,21 +51,22 @@ config = {
 
 if ('DISCORD_TOKEN' in os.environ):
     token       = os.environ['DISCORD_TOKEN']
-if ('ROLL20_JOURNAL' in os.environ):
-    journal     = os.environ['ROLL20_JOURNAL']
 if ('CHROMEDRIVER_PATH' in os.environ):
     chrome_path = os.environ['CHROMEDRIVER_PATH']
 if ('GLOBAL_BOT_ADMINS' in os.environ):
     config['global_bot_admins'] = os.environ['GLOBAL_BOT_ADMINS'].split(':')
 
+if ('ROLL20_JOURNAL' in os.environ):
+    journal     = os.environ['ROLL20_JOURNAL']
+
 try:
     opts, args = getopt.getopt(sys.argv[1:], "ht:j:c:", ["token=", "journal=", "chrome="])
 except getopt.GetoptError:
-    print('roll20bot.py -t <Discord Token> -j <Roll20 Journal URL> -c <ChromeDriver Path>')
+    print('bot.py -t <Discord Token> -j <Roll20 Journal URL> -c <ChromeDriver Path>')
     sys.exit(1)
 for opt, arg in opts:
     if opt == "-h":
-        print('roll20bot.py -t <Discord Token> -j <Roll20 Journal URL> -c <ChromeDriver Path>')
+        print('bot.py -t <Discord Token> -j <Roll20 Journal URL> -c <ChromeDriver Path>')
         sys.exit(1)
     elif opt in ("-t", "--token"):
         token = arg
@@ -162,7 +164,7 @@ async def _discordbot_test(ctx, arg_1='1', arg_2='2'):
 @bot.command(pass_context=True, name='json')
 async def _discordbot_json(ctx):
     tmp = await bot.say('Retrieving Roll20 JSON {} ...'.format(journal))
-    varJSON = roll20decoder.decode_roll20_journal(chrome_path, journal, 'SUPER!SECRET~KEY')
+    varJSON = roll20bridge.load_handout(chrome_path, journal, 'SUPER!SECRET~KEY')
     #await bot.say('The roll20 handout json = {}'.format(json.dumps(varJSON, indent=2, sort_keys=True))[0:2000])
     await bot.edit_message(tmp, 'The roll20 handout json = {}'.format(json.dumps(varJSON, indent=2, sort_keys=True))[0:2000])
     await bot.say('**attributes:**\n{}'.format(', '.join(varJSON['siliceous#5311']['Chirk Chorster']['attributes'].keys()))[0:2000])
