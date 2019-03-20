@@ -114,5 +114,34 @@ def load_handout(chrome,handout_url,handout_key):
 ##############################
 
 if __name__ == "__main__":
-    # TODO Add some code here to let roll20bridge be used as a command-line utility.
-    pass
+    import os
+    import sys
+    import getopt
+
+    handout_url    = ''
+    handout_key    = ''
+    chrome_path    = ''
+
+    if ('CHROMEDRIVER_PATH' in os.environ):
+        chrome_path = os.environ['CHROMEDRIVER_PATH']
+    if ('ROLL20_JOURNAL' in os.environ):
+        handout_url = os.environ['ROLL20_JOURNAL']
+
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "hu:k:c:", ["url=", "key=", "chrome="])
+    except getopt.GetoptError:
+        print('roll20bridge.py -u <Handout URL> -k <Handout Key> -c <ChromeDriver Path>')
+        sys.exit(1)
+    for opt, arg in opts:
+        if opt == "-h":
+            print('roll20bridge.py -u <Handout URL> -k <Handout Key> -c <ChromeDriver Path>')
+            sys.exit(1)
+        elif opt in ("-u", "--url"):
+            handout_url = arg
+        elif opt in ("-k", "--key"):
+            handout_key = arg
+        elif opt in ("-c", "--chrome"):
+            chrome_path = arg
+
+    if (handout_url !n '')
+        varJSON = roll20bridge.load_handout(chrome_path, handout_url, handout_key)

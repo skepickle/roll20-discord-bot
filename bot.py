@@ -14,7 +14,7 @@ import json
 
 if __name__ != "__main__":
     print("ERROR: bot.py must be executed as the top-level code.")
-    exit(-1)
+    sys.exit(1)
 
 # Options parsing
 
@@ -57,6 +57,7 @@ if ('DISCORD_TOKEN' in os.environ):
     token       = os.environ['DISCORD_TOKEN']
 if ('CHROMEDRIVER_PATH' in os.environ):
     chrome_path = os.environ['CHROMEDRIVER_PATH']
+
 if ('GLOBAL_BOT_ADMINS' in os.environ):
     config['global_bot_admins'] = os.environ['GLOBAL_BOT_ADMINS'].split(':')
 
@@ -64,7 +65,7 @@ if ('ROLL20_JOURNAL' in os.environ):
     journal     = os.environ['ROLL20_JOURNAL']
 
 try:
-    opts, args = getopt.getopt(sys.argv[1:], "ht:j:c:", ["token=", "chrome="])
+    opts, args = getopt.getopt(sys.argv[1:], "ht:c:", ["token=", "chrome="])
 except getopt.GetoptError:
     print('bot.py -t <Discord Token> -c <ChromeDriver Path>')
     sys.exit(1)
