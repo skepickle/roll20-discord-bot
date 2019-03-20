@@ -179,7 +179,7 @@ def is_global_bot_admin(ctx):
 @bot.group(pass_context=True, name='global', hidden=True, description='The global group of commands allow for administration of Roll20Bot globally')
 async def _discordbot_global(ctx):
     if ctx.message.server != None:
-        await bot.say('The **_global_** configuration command must be initiated from a private-message, not a guild channel.')
+        await bot.say('The **global** configuration command-group must be initiated from a private-message, not a guild channel.')
     if not is_global_bot_admin(ctx):
         return
 
@@ -216,25 +216,35 @@ def is_guild_admin(ctx):
 @bot.group(pass_context=True, name='guild', hidden=True)
 async def _discordbot_guild(ctx):
     if ctx.message.server == None:
-        await bot.say('The **_guild_** configuration command must be initiated from a guild channel, not a private-message.')
+        await bot.say('The **guild** configuration command-group must be initiated from a guild channel, not a private-message.')
     if not is_guild_admin(ctx):
         return
     if ctx.invoked_subcommand is None:
         await bot.say('Print !guild usage here.')
 
 @_discordbot_guild.command(pass_context=True, name='handout')
-async def _discordbot_guild_handout(ctx):
+async def _discordbot_guild_handout(ctx, url=None: str, key=None: str):
     if ctx.message.server == None:
         return
     if not is_guild_admin(ctx):
         return
-    s = ''
-    if len(config['guilds']) == 0:
-        s = 'There are no Discord guilds configured.'
-    else:
-        s = "The following Discord guilds are configured:\n"
-        for key, value in config['guilds'].items():
-            s += "    " + key + " => " + value['name'] + "\n"
-    await bot.say(s)
+    if (url == None) and (key == None):
+        s = 'Current guild handout configuration:\n'
+        s += '- url: '
+        if 'handoutURL' in config['guilds'][ctx.message.server.id]:
+            s += config['guilds'][ctx.message.server.id]['handoutURL']
+        else:
+            s += 'UNDEFINED'
+        s += '\n- key: '
+        if 'handoutKey' in config['guilds'][ctx.message.server.id]:
+            s += config['guilds'][ctx.message.server.id]['handoutKey']
+        else:
+            s += 'UNDEFINED'
+       await bot.say(s)
+       return
+    if (url != None):
+        config['guilds'][ctx.message.server.id]['handoutURL'] = url
+    if (key != None):
+        config['guilds'][ctx.message.server.id]['handoutKey'] = key
 
 bot.run(token)
