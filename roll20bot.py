@@ -185,6 +185,8 @@ async def _discordbot_global(ctx):
 
 @_discordbot_global.command(pass_context=True, name='guilds', brief='List guilds using this bot', description='List guilds that are currently have Roll20Bot added.', help='This command does not accept any arguments.')
 async def _discordbot_global_guilds(ctx):
+    if ctx.message.server != None:
+        return
     if not is_global_bot_admin(ctx):
         return
     s = ''
@@ -214,7 +216,7 @@ def is_guild_admin(ctx):
 @bot.group(pass_context=True, name='guild', hidden=True)
 async def _discordbot_guild(ctx):
     if ctx.message.server == None:
-        bot.say('The **_guild_** configuration command must be initiated from a guild channel, not a private-message.')
+        await bot.say('The **_guild_** configuration command must be initiated from a guild channel, not a private-message.')
     if not is_guild_admin(ctx):
         return
     if ctx.invoked_subcommand is None:
@@ -222,6 +224,8 @@ async def _discordbot_guild(ctx):
 
 @_discordbot_guild.command(pass_context=True, name='handout')
 async def _discordbot_guild_handout(ctx):
+    if ctx.message.server == None:
+        return
     if not is_guild_admin(ctx):
         return
     s = ''
