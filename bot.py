@@ -60,18 +60,16 @@ if ('ROLL20_JOURNAL' in os.environ):
     journal     = os.environ['ROLL20_JOURNAL']
 
 try:
-    opts, args = getopt.getopt(sys.argv[1:], "ht:j:c:", ["token=", "journal=", "chrome="])
+    opts, args = getopt.getopt(sys.argv[1:], "ht:j:c:", ["token=", "chrome="])
 except getopt.GetoptError:
-    print('bot.py -t <Discord Token> -j <Roll20 Journal URL> -c <ChromeDriver Path>')
+    print('bot.py -t <Discord Token> -c <ChromeDriver Path>')
     sys.exit(1)
 for opt, arg in opts:
     if opt == "-h":
-        print('bot.py -t <Discord Token> -j <Roll20 Journal URL> -c <ChromeDriver Path>')
+        print('bot.py -t <Discord Token> -c <ChromeDriver Path>')
         sys.exit(1)
     elif opt in ("-t", "--token"):
         token = arg
-    elif opt in ("-j", "--journal"):
-        journal = arg
     elif opt in ("-c", "--chrome"):
         chrome_path = arg
 
