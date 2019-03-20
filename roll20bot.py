@@ -73,7 +73,9 @@ for opt, arg in opts:
     elif opt in ("-c", "--chrome"):
         chrome_path = arg
 
-bot = commands.Bot(command_prefix=config['command_prefix'], help_command=None, description="blah blah")
+bot = commands.Bot(command_prefix=config['command_prefix'], description="blah blah")
+print(bot.__dict__)
+
 
 @bot.event
 async def on_ready():
