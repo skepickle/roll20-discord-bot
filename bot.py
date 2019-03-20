@@ -10,6 +10,7 @@ from discord.ext import commands
 import asyncio
 
 import roll20bridge
+#import roll20sheet
 import json
 
 if __name__ != "__main__":
