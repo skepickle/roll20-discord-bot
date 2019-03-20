@@ -223,7 +223,7 @@ async def _discordbot_guild(ctx):
         await bot.say('Print !guild usage here.')
 
 @_discordbot_guild.command(pass_context=True, name='handout')
-async def _discordbot_guild_handout(ctx, url=None: str, key=None: str):
+async def _discordbot_guild_handout(ctx, url=None, key=None):
     if ctx.message.server == None:
         return
     if not is_guild_admin(ctx):
