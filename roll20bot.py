@@ -20,14 +20,14 @@ chrome_path    = ''
 
 config = {
     'command_prefix': '!',
-    'admins': [],
+    'global_bot_admins': [],
     'servers': {}
 }
 
 """
    config = {
        'command_prefix': char,
-       'admins': [ str ],
+       'global_bot_admins': [ str ],
        'servers': {
            '__str:server_id__': {
                'name': str,
@@ -54,8 +54,8 @@ if ('ROLL20_JOURNAL' in os.environ):
     journal     = os.environ['ROLL20_JOURNAL']
 if ('CHROMEDRIVER_PATH' in os.environ):
     chrome_path = os.environ['CHROMEDRIVER_PATH']
-if ('BOT_ADMINS' in os.environ):
-    config['admins'] = os.environ['BOT_ADMINS'].split(':')
+if ('GLOBAL_BOT_ADMINS' in os.environ):
+    config['global_bot_admins'] = os.environ['GLOBAL_BOT_ADMINS'].split(':')
 
 try:
     opts, args = getopt.getopt(sys.argv[1:], "ht:j:c:", ["token=", "journal=", "chrome="])
@@ -73,10 +73,9 @@ for opt, arg in opts:
     elif opt in ("-c", "--chrome"):
         chrome_path = arg
 
-bot = commands.Bot(command_prefix=config['command_prefix'], description="blah blah")
-bot.pm_help = True;
-print(bot.__dict__)
-
+bot = commands.Bot(command_prefix=config['command_prefix'], description="blah blah", pm_help=True)
+#bot.pm_help = True;
+#print(bot.__dict__)
 
 @bot.event
 async def on_ready():
@@ -169,24 +168,24 @@ async def _discordbot_json(ctx):
     await bot.say('**attributes:**\n{}'.format(', '.join(varJSON['siliceous#5311']['Chirk Chorster']['attributes'].keys()))[0:2000])
 
 ####################
-# Bot Administration Functions
+# Global Bot Administration
 ####################
 
 # Bot admins are defined at deployment of the bot, and cannot be modified live.
 
-def is_bot_admin(ctx):
-    return str(ctx.message.author) in config['admins']
+def is_global_bot_admin(ctx):
+    return str(ctx.message.author) in config['global_bot_admins']
 
 @bot.group(pass_context=True, name='admin', hidden=True)
 async def _discordbot_admin(ctx):
-    if not is_bot_admin(ctx):
+    if not is_global_bot_admin(ctx):
         return
     if ctx.invoked_subcommand is None:
         await bot.say('TODO: Print !admin usage here.')
 
 @_discordbot_admin.command(pass_context=True, name='list')
 async def _discordbot_admin_list(ctx):
-    if not is_bot_admin(ctx):
+    if not is_global_bot_admin(ctx):
         return
     s = ''
     if len(config['servers']) == 0:
@@ -198,7 +197,7 @@ async def _discordbot_admin_list(ctx):
     await bot.say(s)
 
 ####################
-# Server Configuration Functions
+# Guild Bot Administration
 ####################
 
 # Server Owners should always be able to modify these configurations
