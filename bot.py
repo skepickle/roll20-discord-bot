@@ -151,16 +151,6 @@ async def _discordbot_sleep(ctx):
     await asyncio.sleep(5)
     await bot.say('Done sleeping')
 
-@bot.command(pass_context=True, name='test', description='DESCRIPTION BLAH BLAH', brief='print env vars', help='Print out server-side environment variables')
-async def _discordbot_test(ctx, arg_1='1', arg_2='2'):
-    await bot.say('Test Command from {}'.format(str(ctx.message.author)))
-    counter = 0
-    tmp = await bot.say('Calculating messages...')
-    async for log in bot.logs_from(ctx.message.channel, limit=100):
-        if log.author == ctx.message.author:
-            counter += 1
-    await bot.edit_message(tmp, 'You have {} messages.\n{}'.format(counter, os.environ))
-
 @bot.command(pass_context=True, name='json')
 async def _discordbot_json(ctx):
     tmp = await bot.say('Retrieving Roll20 JSON {} ...'.format(journal))
@@ -184,6 +174,19 @@ async def _discordbot_global(ctx):
         await bot.say('The **global** configuration command-group must be initiated from a private-message, not a guild channel.')
     if not is_global_bot_admin(ctx):
         return
+
+@_discordbot_global.command(pass_context=True, name='test', description='DESCRIPTION BLAH BLAH', brief='print env vars', help='Print out server-side environment variables')
+async def _discordbot_global_test(ctx, arg_1='1', arg_2='2'):
+    if ctx.message.server != None:
+        return
+    if not is_global_bot_admin(ctx):
+        return
+    counter = 0
+    tmp = await bot.say('Calculating messages...')
+    async for log in bot.logs_from(ctx.message.channel, limit=100):
+        if log.author == ctx.message.author:
+            counter += 1
+    await bot.edit_message(tmp, 'You have {} messages.\n{}'.format(counter, os.environ))
 
 @_discordbot_global.command(pass_context=True, name='guilds', brief='List guilds using this bot', description='List guilds that are currently have Roll20Bot added.', help='This command does not accept any arguments.')
 async def _discordbot_global_guilds(ctx):
