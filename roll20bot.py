@@ -176,14 +176,14 @@ async def _discordbot_json(ctx):
 def is_global_bot_admin(ctx):
     return str(ctx.message.author) in config['global_bot_admins']
 
-@bot.group(pass_context=True, name='global', hidden=True)
+@bot.group(pass_context=True, name='global', hidden=True, description='The global group of commands allow for administration of Roll20Bot globally')
 async def _discordbot_global(ctx):
     if ctx.message.server != None:
-        bot.say('The **_global_** configuration command must be initiated from a private-message, not a guild channel.')
+        await bot.say('The **_global_** configuration command must be initiated from a private-message, not a guild channel.')
     if not is_global_bot_admin(ctx):
         return
 
-@_discordbot_global.command(pass_context=True, name='guilds', brief='List guilds using this bot', description='List guilds that are currently have Roll20Bot added.', help='**_global guilds_** does not accept any arguments.')
+@_discordbot_global.command(pass_context=True, name='guilds', brief='List guilds using this bot', description='List guilds that are currently have Roll20Bot added.', help='This command does not accept any arguments.')
 async def _discordbot_global_guilds(ctx):
     if not is_global_bot_admin(ctx):
         return
