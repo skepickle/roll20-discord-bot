@@ -4,6 +4,10 @@ import json
 import re
 import time
 
+##############################
+# Define utility methods
+##############################
+
 def decode_base64(base64_data):
     base64_table = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/="
     i = 0
@@ -58,6 +62,10 @@ def decode_utf8(utf_text):
             i += 3
     return unicode_text
 
+##############################
+# Define method to load handout from URL
+##############################
+
 def load_handout(chrome,handout_url,handout_key):
 
     #Define webdriver with path
@@ -100,3 +108,11 @@ def load_handout(chrome,handout_url,handout_key):
 
     driver.quit()
     return json.loads(decode_utf8(decrypt(handout_key,decode_base64(handout_url_notes))))
+
+##############################
+# If being used as top-level code, parse command-line arguments and perform some useful actions that could be used for debug.
+##############################
+
+if __name__ == "__main__":
+    # TODO Add some code here to let roll20bridge be used as a command-line utility.
+    pass

@@ -12,6 +12,10 @@ import asyncio
 import roll20bridge
 import json
 
+if __name__ != "__main__":
+    print("ERROR: bot.py must be executed as the top-level code.")
+    exit(-1)
+
 # Options parsing
 
 token          = ''
@@ -74,7 +78,6 @@ for opt, arg in opts:
         chrome_path = arg
 
 bot = commands.Bot(command_prefix=config['command_prefix'], description="Roll20Bot provides access to select character sheets in Roll20 games", pm_help=True)
-#bot.pm_help = True;
 #print(bot.__dict__)
 
 @bot.event
@@ -86,9 +89,7 @@ async def on_ready():
     for server in bot.servers:
         print("    "+server.name+", "+server.id)
         config['guilds'][server.id] = {
-            'name': server.name,
-            'adminRole': '',
-            'palyerRole': ''
+            'name': server.name
         }
     print('------')
 
@@ -153,8 +154,11 @@ async def _discordbot_sleep(ctx):
 async def _discordbot_json(ctx):
     tmp = await bot.say('Retrieving Roll20 JSON {} ...'.format(journal))
     varJSON = roll20bridge.load_handout(chrome_path, journal, 'SUPER!SECRET~KEY')
+    if varJSON == None:
+        await bot.edit_message(tmp, 'Could not load Roll20 bridge handout at {}'.format(journal))
+        return
     #await bot.say('The roll20 handout json = {}'.format(json.dumps(varJSON, indent=2, sort_keys=True))[0:2000])
-    await bot.edit_message(tmp, 'The roll20 handout json = {}'.format(json.dumps(varJSON, indent=2, sort_keys=True))[0:2000])
+    await bot.edit_message(tmp, '**Roll20 bridge handout loaded:**\n{}'.format(json.dumps(varJSON, indent=2, sort_keys=True))[0:2000])
     await bot.say('**attributes:**\n{}'.format(', '.join(varJSON['siliceous#5311']['Chirk Chorster']['attributes'].keys()))[0:2000])
 
 ####################
@@ -225,29 +229,33 @@ async def _discordbot_guild(ctx):
     if ctx.invoked_subcommand is None:
         await bot.say('Print !guild usage here.')
 
-@_discordbot_guild.command(pass_context=True, name='handout')
-async def _discordbot_guild_handout(ctx, url=None, key=None):
+@_discordbot_guild.command(pass_context=True, name='bridge')
+async def _discordbot_guild_bridge(ctx, url=None, key=None):
     if ctx.message.server == None:
         return
     if not is_guild_admin(ctx):
         return
     if (url == None) and (key == None):
-        s = 'Current guild handout configuration:\n'
+        s = 'Current guild bridge configuration:\n'
         s += '- url: '
-        if 'handoutURL' in config['guilds'][ctx.message.server.id]:
-            s += config['guilds'][ctx.message.server.id]['handoutURL']
+        if 'bridgeURL' in config['guilds'][ctx.message.server.id]:
+            s += config['guilds'][ctx.message.server.id]['bridgeURL']
         else:
             s += 'UNDEFINED'
         s += '\n- key: '
-        if 'handoutKey' in config['guilds'][ctx.message.server.id]:
-            s += config['guilds'][ctx.message.server.id]['handoutKey']
+        if 'bridgeKey' in config['guilds'][ctx.message.server.id]:
+            s += config['guilds'][ctx.message.server.id]['bridgeKey']
         else:
             s += 'UNDEFINED'
         await bot.say(s)
         return
     if (url != None):
-        config['guilds'][ctx.message.server.id]['handoutURL'] = url
+        config['guilds'][ctx.message.server.id]['bridgeURL'] = url
     if (key != None):
-        config['guilds'][ctx.message.server.id]['handoutKey'] = key
+        config['guilds'][ctx.message.server.id]['bridgeKey'] = key
+
+####################
+# Run the Bot
+####################
 
 bot.run(token)
