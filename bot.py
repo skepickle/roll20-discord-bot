@@ -18,6 +18,7 @@ if __name__ != "__main__":
     sys.exit(1)
 
 # Options parsing
+# TODO These options and configurations need to move into a manager class at some point
 
 discord_token = None
 handout_url   = None
@@ -60,7 +61,7 @@ if ('DISCORD_TOKEN' in os.environ):
 if ('CHROMEDRIVER_PATH' in os.environ):
     chrome_path = os.environ['CHROMEDRIVER_PATH']
 
-# The following settings will be moved from ENVIRONMENT variables to stored(db?) configurations
+# TODO The following settings will be moved from ENVIRONMENT variables to stored(db?) configurations
 if ('GLOBAL_BOT_ADMINS' in os.environ):
     config['global_bot_admins'] = os.environ['GLOBAL_BOT_ADMINS'].split(':')
 if ('ROLL20_JOURNAL' in os.environ):
