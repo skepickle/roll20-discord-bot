@@ -4,6 +4,8 @@ import json
 import re
 import time
 
+#import roll20sheet
+
 ##############################
 # Define utility methods
 ##############################

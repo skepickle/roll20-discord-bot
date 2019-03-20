@@ -18,9 +18,10 @@ if __name__ != "__main__":
 
 # Options parsing
 
-token          = ''
-journal        = ''
-chrome_path    = ''
+discord_token = None
+handout_url   = None
+handout_key   = None
+chrome_path   = None
 
 config = {
     'command_prefix': '!',
@@ -54,15 +55,17 @@ config = {
 """
 
 if ('DISCORD_TOKEN' in os.environ):
-    token       = os.environ['DISCORD_TOKEN']
+    discord_token = os.environ['DISCORD_TOKEN']
 if ('CHROMEDRIVER_PATH' in os.environ):
     chrome_path = os.environ['CHROMEDRIVER_PATH']
 
+# The following settings will be moved from ENVIRONMENT variables to stored(db?) configurations
 if ('GLOBAL_BOT_ADMINS' in os.environ):
     config['global_bot_admins'] = os.environ['GLOBAL_BOT_ADMINS'].split(':')
-
 if ('ROLL20_JOURNAL' in os.environ):
-    journal     = os.environ['ROLL20_JOURNAL']
+    handout_url = os.environ['ROLL20_JOURNAL']
+if ('ROLL20_KEY' in os.environ):
+    handout_key = os.environ['ROLL20_KEY']
 
 try:
     opts, args = getopt.getopt(sys.argv[1:], "ht:c:", ["token=", "chrome="])
@@ -74,7 +77,7 @@ for opt, arg in opts:
         print('bot.py -t <Discord Token> -c <ChromeDriver Path>')
         sys.exit(1)
     elif opt in ("-t", "--token"):
-        token = arg
+        discord_token = arg
     elif opt in ("-c", "--chrome"):
         chrome_path = arg
 
@@ -134,8 +137,8 @@ async def on_message(message):
     #    return
     #elif message.content.startswith('!json'):
     #    tmp = await bot.send_message(message.channel, 'Retrieving Roll20 JSON...')
-    #    #varJSON = json.loads(utf8_decode(xor_decrypt('SUPER!SECRET~KEY',b64_decode(get_roll20_json()))))
-    #    varJSON = Roll20BridgeDecoder.decode_roll20_journal(journal,'SUPER!SECRET~KEY')
+    #    #varJSON = json.loads(utf8_decode(xor_decrypt(handout_key,b64_decode(get_roll20_json()))))
+    #    varJSON = Roll20BridgeDecoder.load_handout(chrome_path, handout_url, handout_key)
     #    await bot.edit_message(tmp, 'The roll20 handout json = {}'.format(json.dumps(varJSON, indent=2, sort_keys=True))[0:2000])
     #elif message.content.startswith('!sleep'):
     #    await asyncio.sleep(5)
@@ -153,14 +156,14 @@ async def _discordbot_sleep(ctx):
 
 @bot.command(pass_context=True, name='json')
 async def _discordbot_json(ctx):
-    tmp = await bot.say('Retrieving Roll20 JSON {} ...'.format(journal))
-    varJSON = roll20bridge.load_handout(chrome_path, journal, 'SUPER!SECRET~KEY')
+    tmp = await bot.say('Retrieving Roll20 JSON {} ...'.format(handout_url))
+    varJSON = roll20bridge.load_handout(chrome_path, handout_url, handout_key)
     if varJSON == None:
-        await bot.edit_message(tmp, 'Could not load Roll20 bridge handout at {}'.format(journal))
+        await bot.edit_message(tmp, 'Could not load Roll20 bridge handout at {}'.format(handout_url))
         return
     #await bot.say('The roll20 handout json = {}'.format(json.dumps(varJSON, indent=2, sort_keys=True))[0:2000])
-    await bot.edit_message(tmp, '**Roll20 bridge handout loaded:**\n{}'.format(json.dumps(varJSON, indent=2, sort_keys=True))[0:2000])
-    await bot.say('**attributes:**\n{}'.format(', '.join(varJSON['siliceous#5311']['Chirk Chorster']['attributes'].keys()))[0:2000])
+    #await bot.edit_message(tmp, '**Roll20 bridge handout loaded:**\n{}'.format(json.dumps(varJSON, indent=2, sort_keys=True))[0:2000])
+    await bot.edit_message(tmp, '**attributes:**\n{}'.format(', '.join(varJSON['siliceous#5311']['Chirk Chorster']['attributes'].keys()))[0:2000])
 
 ####################
 # Global Bot Administration
@@ -259,4 +262,4 @@ async def _discordbot_guild_bridge(ctx, url=None, key=None):
 # Run the Bot
 ####################
 
-bot.run(token)
+bot.run(discord_token)
