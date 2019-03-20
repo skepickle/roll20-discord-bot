@@ -177,7 +177,7 @@ async def _discordbot_json(ctx):
 def is_bot_admin(ctx):
     return str(ctx.message.author) in config['admins']
 
-@bot.group(pass_context=True, name='admin')
+@bot.group(pass_context=True, name='admin', hidden=True)
 async def _discordbot_admin(ctx):
     if not is_bot_admin(ctx):
         return
