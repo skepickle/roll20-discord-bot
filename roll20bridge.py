@@ -143,5 +143,5 @@ if __name__ == "__main__":
         elif opt in ("-c", "--chrome"):
             chrome_path = arg
 
-    if (handout_url != '')
+    if (handout_url != ''):
         varJSON = roll20bridge.load_handout(chrome_path, handout_url, handout_key)
