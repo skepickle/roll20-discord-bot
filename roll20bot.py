@@ -21,14 +21,14 @@ chrome_path    = ''
 config = {
     'command_prefix': '!',
     'global_bot_admins': [],
-    'servers': {}
+    'guilds': {}
 }
 
 """
    config = {
        'command_prefix': char,
        'global_bot_admins': [ str ],
-       'servers': {
+       'guilds': {
            '__str:server_id__': {
                'name': str,
                'adminRole': str,
@@ -42,7 +42,7 @@ config = {
        },
        'users': {
            '__str:user_id__': {
-               servers: []
+               guilds: []
            }
        }
    }
@@ -73,7 +73,7 @@ for opt, arg in opts:
     elif opt in ("-c", "--chrome"):
         chrome_path = arg
 
-bot = commands.Bot(command_prefix=config['command_prefix'], description="blah blah", pm_help=True)
+bot = commands.Bot(command_prefix=config['command_prefix'], description="Roll20Bot provides access to select character sheets in Roll20 games", pm_help=True)
 #bot.pm_help = True;
 #print(bot.__dict__)
 
@@ -85,7 +85,7 @@ async def on_ready():
     print('------')
     for server in bot.servers:
         print("    "+server.name+", "+server.id)
-        config['servers'][server.id] = {
+        config['guilds'][server.id] = {
             'name': server.name,
             'adminRole': '',
             'palyerRole': ''
@@ -94,9 +94,9 @@ async def on_ready():
 
 @bot.event
 async def on_guild_join(guild):
-    if guild.id not in config['servers']:
-        await bot.say(guild.id + "not in current servers list")
-        config['servers'][guild.id] = {
+    if guild.id not in config['guilds']:
+        await bot.say(guild.id + " not in current guilds list")
+        config['guilds'][guild.id] = {
             'name': guild.name,
             'adminsRole': '',
             'usersRole': ''
@@ -105,9 +105,9 @@ async def on_guild_join(guild):
 
 @bot.event
 async def on_guild_remove(guild):
-    if guild.id in config['servers']:
-        await bot.say(guild.id + " in current servers list")
-        config['servers'].pop(guild.id, None)
+    if guild.id in config['guilds']:
+        await bot.say(guild.id + " in current guilds list")
+        config['guilds'].pop(guild.id, None)
     return
 
 @bot.event
@@ -149,7 +149,7 @@ async def _discordbot_sleep(ctx):
     await asyncio.sleep(5)
     await bot.say('Done sleeping')
 
-@bot.command(pass_context=True, name='test', description='DESCRIPTION BLAH BLAH', brief='print env vars', help='Print out server side environment variables')
+@bot.command(pass_context=True, name='test', description='DESCRIPTION BLAH BLAH', brief='print env vars', help='Print out server-side environment variables')
 async def _discordbot_test(ctx, arg_1='1', arg_2='2'):
     await bot.say('Test Command from {}'.format(str(ctx.message.author)))
     counter = 0
@@ -171,28 +171,28 @@ async def _discordbot_json(ctx):
 # Global Bot Administration
 ####################
 
-# Bot admins are defined at deployment of the bot, and cannot be modified live.
+# Global bot admins are defined at deployment-time of the bot, and cannot be modified live.
 
 def is_global_bot_admin(ctx):
     return str(ctx.message.author) in config['global_bot_admins']
 
-@bot.group(pass_context=True, name='admin', hidden=True)
-async def _discordbot_admin(ctx):
+@bot.group(pass_context=True, name='global', hidden=True)
+async def _discordbot_global(ctx):
+    if ctx.message.server != None:
+        bot.say('The **_global_** configuration command must be initiated from a private-message, not a guild channel.')
     if not is_global_bot_admin(ctx):
         return
-    if ctx.invoked_subcommand is None:
-        await bot.say('TODO: Print !admin usage here.')
 
-@_discordbot_admin.command(pass_context=True, name='list')
-async def _discordbot_admin_list(ctx):
+@_discordbot_global.command(pass_context=True, name='guilds', brief='List guilds using this bot', description='List guilds that are currently have Roll20Bot added.', help='**_global guilds_** does not accept any arguments.')
+async def _discordbot_global_guilds(ctx):
     if not is_global_bot_admin(ctx):
         return
     s = ''
-    if len(config['servers']) == 0:
-        s = 'There are no Discord servers configured.'
+    if len(config['guilds']) == 0:
+        s = 'There are no Discord guilds configured.'
     else:
-        s = "The following Discord servers are configured:\n"
-        for key, value in config['servers'].items():
+        s = "The following Discord guilds are configured:\n"
+        for key, value in config['guilds'].items():
             s += "    " + key + " => " + value['name'] + "\n"
     await bot.say(s)
 
@@ -200,34 +200,36 @@ async def _discordbot_admin_list(ctx):
 # Guild Bot Administration
 ####################
 
-# Server Owners should always be able to modify these configurations
-# If a role is defined for administrators, then the members of that role will also be able to modify server configs
+# Guild owners should always be able to modify these configurations
+# If a role is defined for administrators, then the members of that role will also be able to modify guild configs
 
-def is_server_admin(ctx):
+def is_guild_admin(ctx):
     if ctx.message.server == None:
         return False
     if ctx.message.author == ctx.message.server.owner:
         return True
-    # TODO Also check admin role on server...
+    # TODO Also check admin role on guild...
     return False
 
-@bot.group(pass_context=True, name='config')
-async def _discordbot_config(ctx):
-    if not is_server_admin(ctx):
+@bot.group(pass_context=True, name='guild', hidden=True)
+async def _discordbot_guild(ctx):
+    if ctx.message.server == None:
+        bot.say('The **_guild_** configuration command must be initiated from a guild channel, not a private-message.')
+    if not is_guild_admin(ctx):
         return
     if ctx.invoked_subcommand is None:
-        await bot.say('Print !config usage here.')
+        await bot.say('Print !guild usage here.')
 
-@_discordbot_config.command(pass_context=True, name='journal')
-async def _discordbot_config_journal(ctx):
-    if not is_server_admin(ctx):
+@_discordbot_guild.command(pass_context=True, name='handout')
+async def _discordbot_guild_handout(ctx):
+    if not is_guild_admin(ctx):
         return
     s = ''
-    if len(config['servers']) == 0:
-        s = 'There are no Discord servers configured.'
+    if len(config['guilds']) == 0:
+        s = 'There are no Discord guilds configured.'
     else:
-        s = "The following Discord servers are configured:\n"
-        for key, value in config['servers'].items():
+        s = "The following Discord guilds are configured:\n"
+        for key, value in config['guilds'].items():
             s += "    " + key + " => " + value['name'] + "\n"
     await bot.say(s)
 
