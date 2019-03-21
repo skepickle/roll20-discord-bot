@@ -191,10 +191,10 @@ async def _discordbot_global_test(ctx, arg_1='1', arg_2='2'):
         return
     counter = 0
     tmp = await ctx.channel.send('Calculating messages...')
-    async for log in bot.logs_from(ctx.message.channel, limit=100):
-        if log.author == ctx.message.author:
-            counter += 1
-    await tmp.edit(content='You have {} messages.\n{}'.format(counter, os.environ))
+    #async for log in bot.logs_from(ctx.message.channel, limit=100):
+    #    if log.author == ctx.message.author:
+    #        counter += 1
+    await tmp.edit(content='{}'.format(counter, os.environ))
 
 @_discordbot_global.command(name='guilds', brief='List guilds using this bot', description='List guilds that are currently have Roll20Bot added.', help='This command does not accept any arguments.')
 async def _discordbot_global_guilds(ctx):
@@ -208,7 +208,7 @@ async def _discordbot_global_guilds(ctx):
     else:
         s = "The following Discord guilds are configured:\n"
         for key, value in config['guilds'].items():
-            s += "    " + key + " => " + value['name'] + "\n"
+            s += "    " + str(key) + " => " + value['name'] + "\n"
     await ctx.channel.send(s)
 
 ####################
