@@ -147,7 +147,7 @@ async def on_message(message):
     #    await bot.send_message(message.channel, 'Done sleeping')
     await bot.process_commands(message)
 
-@bot.command(pass_context=True, name='characters')
+@bot.command(name='characters')
 async def _discordbot_characters(ctx):
     pass
 
@@ -156,7 +156,7 @@ async def _discordbot_sleep(ctx):
     await asyncio.sleep(1)
     await ctx.channel.send('Done sleeping')
 
-@bot.command(pass_context=True, name='json')
+@bot.command(name='json')
 async def _discordbot_json(ctx):
     tmp = await ctx.channel.send('Retrieving Roll20 JSON {} ...'.format(handout_url))
     varJSON = roll20bridge.load_handout(chrome_path, handout_url, handout_key)
@@ -176,14 +176,14 @@ async def _discordbot_json(ctx):
 def is_global_bot_admin(ctx):
     return str(ctx.message.author) in config['global_bot_admins']
 
-@bot.group(pass_context=True, name='global', hidden=True, description='The global group of commands allow for administration of Roll20Bot globally')
+@bot.group(name='global', hidden=True, description='The global group of commands allow for administration of Roll20Bot globally')
 async def _discordbot_global(ctx):
     if ctx.message.server != None:
         await ctx.channel.send('The **global** configuration command-group must be initiated from a private-message, not a guild channel.')
     if not is_global_bot_admin(ctx):
         return
 
-@_discordbot_global.command(pass_context=True, name='test', description='DESCRIPTION BLAH BLAH', brief='print env vars', help='Print out server-side environment variables')
+@_discordbot_global.command(name='test', description='DESCRIPTION BLAH BLAH', brief='print env vars', help='Print out server-side environment variables')
 async def _discordbot_global_test(ctx, arg_1='1', arg_2='2'):
     if ctx.message.server != None:
         return
@@ -196,7 +196,7 @@ async def _discordbot_global_test(ctx, arg_1='1', arg_2='2'):
             counter += 1
     await tmp.edit(content='You have {} messages.\n{}'.format(counter, os.environ))
 
-@_discordbot_global.command(pass_context=True, name='guilds', brief='List guilds using this bot', description='List guilds that are currently have Roll20Bot added.', help='This command does not accept any arguments.')
+@_discordbot_global.command(name='guilds', brief='List guilds using this bot', description='List guilds that are currently have Roll20Bot added.', help='This command does not accept any arguments.')
 async def _discordbot_global_guilds(ctx):
     if ctx.message.server != None:
         return
@@ -226,7 +226,7 @@ def is_guild_admin(ctx):
     # TODO Also check admin role on guild...
     return False
 
-@bot.group(pass_context=True, name='guild', hidden=True)
+@bot.group(name='guild', hidden=True)
 async def _discordbot_guild(ctx):
     if ctx.message.server == None:
         await ctx.channel.send('The **guild** configuration command-group must be initiated from a guild channel, not a private-message.')
@@ -235,7 +235,7 @@ async def _discordbot_guild(ctx):
     if ctx.invoked_subcommand is None:
         await ctx.channel.send('Print !guild usage here.')
 
-@_discordbot_guild.command(pass_context=True, name='bridge')
+@_discordbot_guild.command(name='bridge')
 async def _discordbot_guild_bridge(ctx, url=None, key=None):
     if ctx.message.server == None:
         return
