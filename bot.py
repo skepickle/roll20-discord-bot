@@ -93,7 +93,7 @@ async def on_ready():
     print(bot.user.id)
     print('------')
     for guild in bot.guilds:
-        print("    "+guild.name+", "+guild.id)
+        print("    "+guild.name+", "+str(guild.id))
         config['guilds'][guild.id] = {
             'name': guild.name
         }
