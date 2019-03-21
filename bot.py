@@ -153,8 +153,8 @@ async def _discordbot_characters(ctx):
 
 @bot.command(pass_context=True, name='sleep')
 async def _discordbot_sleep(ctx):
-    await asyncio.sleep(5)
-    await bot.say('Done sleeping')
+    await asyncio.sleep(1)
+    await bot.send_message(ctx.channel, 'Done sleeping')
 
 @bot.command(pass_context=True, name='json')
 async def _discordbot_json(ctx):
