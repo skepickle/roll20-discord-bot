@@ -102,7 +102,7 @@ async def on_ready():
 @bot.event
 async def on_guild_join(guild):
     if guild.id not in config['guilds']:
-        await bot.say(guild.id + " not in current guilds list")
+        #await bot.say(guild.id + " not in current guilds list")
         config['guilds'][guild.id] = {
             'name': guild.name,
             'adminsRole': '',
@@ -113,7 +113,7 @@ async def on_guild_join(guild):
 @bot.event
 async def on_guild_remove(guild):
     if guild.id in config['guilds']:
-        await bot.say(guild.id + " in current guilds list")
+        #await bot.say(guild.id + " in current guilds list")
         config['guilds'].pop(guild.id, None)
     return
 
@@ -158,14 +158,14 @@ async def _discordbot_sleep(ctx):
 
 @bot.command(pass_context=True, name='json')
 async def _discordbot_json(ctx):
-    tmp = await bot.say('Retrieving Roll20 JSON {} ...'.format(handout_url))
+    tmp = await ctx.channel.send('Retrieving Roll20 JSON {} ...'.format(handout_url))
     varJSON = roll20bridge.load_handout(chrome_path, handout_url, handout_key)
     if varJSON == None:
-        await bot.edit_message(tmp, 'Could not load Roll20 bridge handout at {}'.format(handout_url))
+        await tmp.edit('Could not load Roll20 bridge handout at {}'.format(handout_url))
         return
     #await bot.say('The roll20 handout json = {}'.format(json.dumps(varJSON, indent=2, sort_keys=True))[0:2000])
     #await bot.edit_message(tmp, '**Roll20 bridge handout loaded:**\n{}'.format(json.dumps(varJSON, indent=2, sort_keys=True))[0:2000])
-    await bot.edit_message(tmp, '**attributes:**\n{}'.format(', '.join(varJSON['siliceous#5311']['Chirk Chorster']['attributes'].keys()))[0:2000])
+    await tmp.edit('**attributes:**\n{}'.format(', '.join(varJSON['siliceous#5311']['Chirk Chorster']['attributes'].keys()))[0:2000])
 
 ####################
 # Global Bot Administration
