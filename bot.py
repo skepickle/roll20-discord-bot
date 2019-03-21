@@ -178,14 +178,14 @@ def is_global_bot_admin(ctx):
 
 @bot.group(name='global', hidden=True, description='The global group of commands allow for administration of Roll20Bot globally')
 async def _discordbot_global(ctx):
-    if ctx.message.server != None:
+    if ctx.guild != None:
         await ctx.channel.send('The **global** configuration command-group must be initiated from a private-message, not a guild channel.')
     if not is_global_bot_admin(ctx):
         return
 
 @_discordbot_global.command(name='test', description='DESCRIPTION BLAH BLAH', brief='print env vars', help='Print out server-side environment variables')
 async def _discordbot_global_test(ctx, arg_1='1', arg_2='2'):
-    if ctx.message.server != None:
+    if ctx.guild != None:
         return
     if not is_global_bot_admin(ctx):
         return
@@ -198,7 +198,7 @@ async def _discordbot_global_test(ctx, arg_1='1', arg_2='2'):
 
 @_discordbot_global.command(name='guilds', brief='List guilds using this bot', description='List guilds that are currently have Roll20Bot added.', help='This command does not accept any arguments.')
 async def _discordbot_global_guilds(ctx):
-    if ctx.message.server != None:
+    if ctx.guild != None:
         return
     if not is_global_bot_admin(ctx):
         return
@@ -219,16 +219,16 @@ async def _discordbot_global_guilds(ctx):
 # If a role is defined for administrators, then the members of that role will also be able to modify guild configs
 
 def is_guild_admin(ctx):
-    if ctx.message.server == None:
+    if ctx.guild == None:
         return False
-    if ctx.message.author == ctx.message.server.owner:
+    if ctx.message.author == ctx.guild.owner:
         return True
     # TODO Also check admin role on guild...
     return False
 
 @bot.group(name='guild', hidden=True)
 async def _discordbot_guild(ctx):
-    if ctx.message.server == None:
+    if ctx.guild == None:
         await ctx.channel.send('The **guild** configuration command-group must be initiated from a guild channel, not a private-message.')
     if not is_guild_admin(ctx):
         return
@@ -237,28 +237,28 @@ async def _discordbot_guild(ctx):
 
 @_discordbot_guild.command(name='bridge')
 async def _discordbot_guild_bridge(ctx, url=None, key=None):
-    if ctx.message.server == None:
+    if ctx.guild == None:
         return
     if not is_guild_admin(ctx):
         return
     if (url == None) and (key == None):
         s = 'Current guild bridge configuration:\n'
         s += '- url: '
-        if 'bridgeURL' in config['guilds'][ctx.message.server.id]:
-            s += config['guilds'][ctx.message.server.id]['bridgeURL']
+        if 'bridgeURL' in config['guilds'][ctx.guild.id]:
+            s += config['guilds'][ctx.guild.id]['bridgeURL']
         else:
             s += 'UNDEFINED'
         s += '\n- key: '
-        if 'bridgeKey' in config['guilds'][ctx.message.server.id]:
-            s += config['guilds'][ctx.message.server.id]['bridgeKey']
+        if 'bridgeKey' in config['guilds'][ctx.guild.id]:
+            s += config['guilds'][ctx.guild.id]['bridgeKey']
         else:
             s += 'UNDEFINED'
         await ctx.channel.send(s)
         return
     if (url != None):
-        config['guilds'][ctx.message.server.id]['bridgeURL'] = url
+        config['guilds'][ctx.guild.id]['bridgeURL'] = url
     if (key != None):
-        config['guilds'][ctx.message.server.id]['bridgeKey'] = key
+        config['guilds'][ctx.guild.id]['bridgeKey'] = key
 
 ####################
 # Run the Bot
