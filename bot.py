@@ -102,7 +102,7 @@ async def on_ready():
 @bot.event
 async def on_guild_join(guild):
     if guild.id not in config['guilds']:
-        #await bot.say(guild.id + " not in current guilds list")
+        #await ctx.channel.send(guild.id + " not in current guilds list")
         config['guilds'][guild.id] = {
             'name': guild.name,
             'adminsRole': '',
@@ -113,7 +113,7 @@ async def on_guild_join(guild):
 @bot.event
 async def on_guild_remove(guild):
     if guild.id in config['guilds']:
-        #await bot.say(guild.id + " in current guilds list")
+        #await ctx.channel.send(guild.id + " in current guilds list")
         config['guilds'].pop(guild.id, None)
     return
 
@@ -151,7 +151,7 @@ async def on_message(message):
 async def _discordbot_characters(ctx):
     pass
 
-@bot.command(pass_context=True, name='sleep')
+@bot.command(name='sleep')
 async def _discordbot_sleep(ctx):
     await asyncio.sleep(1)
     await ctx.channel.send('Done sleeping')
@@ -161,9 +161,9 @@ async def _discordbot_json(ctx):
     tmp = await ctx.channel.send('Retrieving Roll20 JSON {} ...'.format(handout_url))
     varJSON = roll20bridge.load_handout(chrome_path, handout_url, handout_key)
     if varJSON == None:
-        await tmp.edit('Could not load Roll20 bridge handout at {}'.format(handout_url))
+        await tmp.edit(content='Could not load Roll20 bridge handout at {}'.format(handout_url))
         return
-    #await bot.say('The roll20 handout json = {}'.format(json.dumps(varJSON, indent=2, sort_keys=True))[0:2000])
+    #await ctx.channel.send('The roll20 handout json = {}'.format(json.dumps(varJSON, indent=2, sort_keys=True))[0:2000])
     #await bot.edit_message(tmp, '**Roll20 bridge handout loaded:**\n{}'.format(json.dumps(varJSON, indent=2, sort_keys=True))[0:2000])
     await tmp.edit(content='**attributes:**\n{}'.format(', '.join(varJSON['siliceous#5311']['Chirk Chorster']['attributes'].keys()))[0:2000])
 
@@ -179,7 +179,7 @@ def is_global_bot_admin(ctx):
 @bot.group(pass_context=True, name='global', hidden=True, description='The global group of commands allow for administration of Roll20Bot globally')
 async def _discordbot_global(ctx):
     if ctx.message.server != None:
-        await bot.say('The **global** configuration command-group must be initiated from a private-message, not a guild channel.')
+        await ctx.channel.send('The **global** configuration command-group must be initiated from a private-message, not a guild channel.')
     if not is_global_bot_admin(ctx):
         return
 
@@ -190,11 +190,11 @@ async def _discordbot_global_test(ctx, arg_1='1', arg_2='2'):
     if not is_global_bot_admin(ctx):
         return
     counter = 0
-    tmp = await bot.say('Calculating messages...')
+    tmp = await ctx.channel.send('Calculating messages...')
     async for log in bot.logs_from(ctx.message.channel, limit=100):
         if log.author == ctx.message.author:
             counter += 1
-    await bot.edit_message(tmp, 'You have {} messages.\n{}'.format(counter, os.environ))
+    await tmp.edit(content='You have {} messages.\n{}'.format(counter, os.environ))
 
 @_discordbot_global.command(pass_context=True, name='guilds', brief='List guilds using this bot', description='List guilds that are currently have Roll20Bot added.', help='This command does not accept any arguments.')
 async def _discordbot_global_guilds(ctx):
@@ -209,7 +209,7 @@ async def _discordbot_global_guilds(ctx):
         s = "The following Discord guilds are configured:\n"
         for key, value in config['guilds'].items():
             s += "    " + key + " => " + value['name'] + "\n"
-    await bot.say(s)
+    await ctx.channel.send(s)
 
 ####################
 # Guild Bot Administration
@@ -229,11 +229,11 @@ def is_guild_admin(ctx):
 @bot.group(pass_context=True, name='guild', hidden=True)
 async def _discordbot_guild(ctx):
     if ctx.message.server == None:
-        await bot.say('The **guild** configuration command-group must be initiated from a guild channel, not a private-message.')
+        await ctx.channel.send('The **guild** configuration command-group must be initiated from a guild channel, not a private-message.')
     if not is_guild_admin(ctx):
         return
     if ctx.invoked_subcommand is None:
-        await bot.say('Print !guild usage here.')
+        await ctx.channel.send('Print !guild usage here.')
 
 @_discordbot_guild.command(pass_context=True, name='bridge')
 async def _discordbot_guild_bridge(ctx, url=None, key=None):
@@ -253,7 +253,7 @@ async def _discordbot_guild_bridge(ctx, url=None, key=None):
             s += config['guilds'][ctx.message.server.id]['bridgeKey']
         else:
             s += 'UNDEFINED'
-        await bot.say(s)
+        await ctx.channel.send(s)
         return
     if (url != None):
         config['guilds'][ctx.message.server.id]['bridgeURL'] = url
