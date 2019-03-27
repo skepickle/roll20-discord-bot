@@ -14,8 +14,12 @@ handout_key = ''
 
 if ('DISCORD_TOKEN' in os.environ):
     token = os.environ['DISCORD_TOKEN']
+if ('POSTGRESQL' in os.environ):
+	postgresql = os.environ['POSTGRESQL']
+
 if ('CHROMEDRIVER_PATH' in os.environ):
     chromedriver_path = os.environ['CHROMEDRIVER_PATH']
+
 # TODO The following settings will be moved from ENVIRONMENT variables to stored(db?) configurations
 
 if ('GLOBAL_BOT_ADMINS' in os.environ):
@@ -26,5 +30,6 @@ if ('ROLL20_KEY' in os.environ):
     handout_key = os.environ['ROLL20_KEY']
 
 #TODO Print out configurations if called directly?
+
 if __name__ == '__main__':
 	pass
