@@ -14,8 +14,8 @@ handout_key = ''
 
 if ('DISCORD_TOKEN' in os.environ):
     token = os.environ['DISCORD_TOKEN']
-if ('POSTGRESQL' in os.environ):
-	postgresql = os.environ['POSTGRESQL']
+if ('POSTGRESQL_URI' in os.environ):
+	postgresql = os.environ['POSTGRESQL_URI']
 
 if ('CHROMEDRIVER_PATH' in os.environ):
     chromedriver_path = os.environ['CHROMEDRIVER_PATH']
