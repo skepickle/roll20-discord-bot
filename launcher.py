@@ -290,7 +290,7 @@ def main(ctx):
         loop = asyncio.get_event_loop()
         with setup_logging():
             run_bot()
-    bot.run(config.token)
+####    bot.run(config.token)
 
 @main.group(short_help='database stuff', options_metavar='[options]')
 def db():
