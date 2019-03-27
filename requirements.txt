@@ -1,6 +1,15 @@
 git+https://github.com/Rapptz/discord.py@rewrite
 dnspython==1.16.0
-PyNaCl==1.3.0
+#PyNaCl==1.3.0
+
+lxml
+psutil
+asyncpg>=0.12.0
+click
+parsedatetime
+lru_dict
+python-dateutil
+
 aiohttp ~= 2.3.10
 async-timeout==3.0.1
 chardet
