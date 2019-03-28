@@ -21,7 +21,7 @@ Hello! I am a bot written by Danny to provide some nice utilities.
 log = logging.getLogger(__name__)
 
 initial_extensions = (
-    'cogs.poll'
+    'cogs.poll',
 #    'cogs.meta',
 #    'cogs.splatoon',
 #    'cogs.rng',
