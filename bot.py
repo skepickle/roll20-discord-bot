@@ -26,7 +26,7 @@ initial_extensions = (
 #    'cogs.splatoon',
 #    'cogs.rng',
     'cogs.mod',
-#    'cogs.profile',
+    'cogs.profile',
 #    'cogs.tags',
 #    'cogs.lounge',
 #    'cogs.carbonitex',
