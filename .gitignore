@@ -8,4 +8,4 @@ migrations/current-*.json
 *.log
 .env
 venv/*
-config.py
+/config.py
