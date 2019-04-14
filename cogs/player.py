@@ -9,7 +9,7 @@ import re
 class Players(db.Table, table_name='roll20_players'):
     # this is the user_id
     id = db.Column(db.Integer(big=True), primary_key=True)
-    roll20 = db.Column(db.String)
+    roll20 = db.Column(db.Integer(big=True))
 
 class DisambiguateMember(commands.IDConverter):
     async def convert(self, ctx, argument):
@@ -65,9 +65,11 @@ class DisambiguateMember(commands.IDConverter):
 
 def valid_roll20(argument):
     arg = argument.strip('"')
-    if not isinstance(argument, int):
+    try:
+       val = int(str(arg))
+    except ValueError:
         raise commands.BadArgument('An Roll20 user id must be an integer.')
-    return arg
+    return val
 
 class Player(commands.Cog):
     def __init__(self, bot):
