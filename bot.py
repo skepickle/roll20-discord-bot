@@ -26,7 +26,6 @@ initial_extensions = (
 #    'cogs.splatoon',
 #    'cogs.rng',
     'cogs.mod',
-    'cogs.profile',
 #    'cogs.tags',
 #    'cogs.lounge',
 #    'cogs.carbonitex',
@@ -40,6 +39,7 @@ initial_extensions = (
     'cogs.config',
 #    'cogs.tournament',
 #    'cogs.dpy',
+    'cogs.player',
 )
 
 def _prefix_callable(bot, msg):

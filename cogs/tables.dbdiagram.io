@@ -1,26 +1,26 @@
 Table players {
-  id      int [pk]
+  id      bigint [pk]
   discord varchar [not null]
   roll20  varchar [not null]
 }
 
 Table campaigns {
-  guild int [ref: > guilds.pkey]
-  gm    int [ref: > players.pkey]
+  guild bigint [ref: > guilds.pkey]
+  gm    bigint [ref: > players.pkey]
   url   varchar [not null]
   key   varchar [not null]
-  id    int [pk]
+  id    bigint [pk]
 }
 
 Table guilds {
-  id       int [pk]
+  id       bigint [pk]
   guild    varchar [not null]
-  campaign int [ref: > campaigns.pkey]
+  campaign bigint [ref: > campaigns.pkey]
 }
 
 Table channels {
-  id       int [pk]
+  id       bigint [pk]
   channel  varchar [not null]
-  guild    int [ref: > guilds.pkey]
-  campaign int [ref: > campaigns.pkey]
+  guild    bigint [ref: > guilds.pkey]
+  campaign bigint [ref: > campaigns.pkey]
 }
