@@ -90,7 +90,7 @@ class Player(commands.Cog):
 
         member = member or ctx.author
 
-        query = """SELECT * FROM players WHERE id=$1;"""
+        query = """SELECT * FROM roll20_players WHERE id=$1;"""
         record = await ctx.db.fetchrow(query, member.id)
 
         if record is None:
@@ -123,7 +123,7 @@ class Player(commands.Cog):
         keys = ', '.join(fields)
         values = ', '.join(f'${2 + i}' for i in range(len(fields)))
 
-        query = f"""INSERT INTO players (id, {keys})
+        query = f"""INSERT INTO roll20_players (id, {keys})
                     VALUES ($1, {values})
                     ON CONFLICT (id)
                     DO UPDATE
@@ -153,7 +153,7 @@ class Player(commands.Cog):
         if field is None:
             confirm = await ctx.prompt("Are you sure you want to delete your player?")
             if confirm:
-                query = "DELETE FROM players WHERE id=$1;"
+                query = "DELETE FROM roll20_players WHERE id=$1;"
                 await ctx.db.execute(query, ctx.author.id)
                 await ctx.send('Successfully deleted player.')
             else:
@@ -174,7 +174,7 @@ class Player(commands.Cog):
 
         column = field_to_column.get(field)
         if column:
-            query = f"UPDATE players SET {column} = NULL WHERE id=$1;"
+            query = f"UPDATE roll20_players SET {column} = NULL WHERE id=$1;"
             await ctx.db.execute(query, ctx.author.id)
             return await ctx.send(f'Successfully deleted {field} field.')
 
