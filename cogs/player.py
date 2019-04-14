@@ -100,13 +100,11 @@ class Player(commands.Cog):
                               f' or check {ctx.prefix}help player')
             else:
                 await ctx.send('This member did not set up a player.')
-            print('record is None')
             return
 
-        print('record is not None')
         # 0xF02D7D - Splatoon 2 Pink
         # 0x19D719 - Splatoon 2 Green
-        e = discord.Embed(colour=0x19D719)
+        e = discord.Embed(colour=0xF02D7D)
 
         keys = {
             'roll20': 'Roll20 User ID'
@@ -115,15 +113,14 @@ class Player(commands.Cog):
         for key, value in keys.items():
             e.add_field(name=value, value=record[key] or 'N/A', inline=True)
 
-        e.add_field(name='testname', value='testvalue', inline=True)
-
         # consoles = [f'__{v}__: {record[k]}' for k, v in keys.items() if record[k] is not None]
         # e.add_field(name='Consoles', value='\n'.join(consoles) if consoles else 'None!', inline=False)
-        e.set_author(name=member.display_name, icon_url=member.avatar_url_as(format='png'))
+        if (record['roll20']):
+            e.set_author(name=member.display_name, url='https://app.roll20.net/users/{}'.format(record['roll20']), icon_url=member.avatar_url_as(format='png'))
+        else:
+            e.set_author(name=member.display_name, icon_url=member.avatar_url_as(format='png'))
 
-        print('trying to send embed')
         await ctx.send(embed=e)
-        print('tried to send embed')
 
     async def edit_fields(self, ctx, **fields):
         keys = ', '.join(fields)
