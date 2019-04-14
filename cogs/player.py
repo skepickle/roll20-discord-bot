@@ -100,8 +100,10 @@ class Player(commands.Cog):
                               f' or check {ctx.prefix}help player')
             else:
                 await ctx.send('This member did not set up a player.')
+            log('record is None')
             return
 
+        log('record is not None')
         # 0xF02D7D - Splatoon 2 Pink
         # 0x19D719 - Splatoon 2 Green
         e = discord.Embed(colour=0x19D719)
@@ -119,7 +121,9 @@ class Player(commands.Cog):
         # e.add_field(name='Consoles', value='\n'.join(consoles) if consoles else 'None!', inline=False)
         e.set_author(name=member.display_name, icon_url=member.avatar_url_as(format='png'))
 
+        log('trying to send embed')
         await ctx.send(embed=e)
+        log('tried to send embed')
 
     async def edit_fields(self, ctx, **fields):
         keys = ', '.join(fields)
