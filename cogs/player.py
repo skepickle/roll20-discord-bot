@@ -9,7 +9,7 @@ import re
 class Players(db.Table, table_name='roll20_players'):
     # this is the user_id
     id = db.Column(db.Integer(big=True), primary_key=True)
-    roll20  = db.Column(db.String)
+    roll20 = db.Column(db.String)
 
 class DisambiguateMember(commands.IDConverter):
     async def convert(self, ctx, argument):
@@ -65,8 +65,8 @@ class DisambiguateMember(commands.IDConverter):
 
 def valid_roll20(argument):
     arg = argument.strip('"')
-    if len(arg) > 16:
-        raise commands.BadArgument('An Roll20 user id has a maximum of 16 characters.') #TODO
+    if not isinstance(argument, int):
+        raise commands.BadArgument('An Roll20 user id must be an integer.')
     return arg
 
 class Player(commands.Cog):
