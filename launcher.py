@@ -333,11 +333,10 @@ def init(cogs, quiet):
                 click.echo(f'[{table.__module__}] No work needed for {table.__tablename__}.')
 
     click.echo(f'Wait for completion', err=False)
-    sleep(3)
+    await asyncio.sleep(3)
     click.echo(f'db init complete', err=False)
-    while (True) {
-        sleep(10)
-    }
+    while True:
+        await asyncio.sleep(10)
 
 db.command(short_help='migrates the databases')
 @click.argument('cog', nargs=1, metavar='[cog]')
