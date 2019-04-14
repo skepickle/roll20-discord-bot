@@ -7,9 +7,8 @@ import discord
 import re
 
 class Players(db.Table, table_name='roll20_players'):
-    # this is the user_id
-    id = db.Column(db.Integer(big=True), primary_key=True)
-    roll20 = db.Column(db.Integer(big=True))
+    id = db.Column(db.Integer(big=True), primary_key=True) # this is the Discord member id (snowflake)
+    roll20 = db.Column(db.Integer(big=True))               # this is the Roll20 user id (integer)
 
 class DisambiguateMember(commands.IDConverter):
     async def convert(self, ctx, argument):
