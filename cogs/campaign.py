@@ -84,24 +84,15 @@ class DisambiguateMember(commands.IDConverter):
 
 def valid_title(argument):
     arg = argument.strip('"')
-    #TODO
-    return arg
-
-def valid_gm(argument):
-    arg = argument.strip('"')
-    #TODO
     return arg
 
 def valid_url(argument):
     arg = argument.strip('"')
-    #if len(arg) > 16:
-    #    raise commands.BadArgument('An NNID has a maximum of 16 characters.')
+    #TODO: Make sure argument is a URL
     return arg
 
 def valid_key(argument):
     arg = argument.strip('"')
-    #if len(arg) > 16:
-    #    raise commands.BadArgument('An NNID has a maximum of 16 characters.')
     return arg
 
 class Campaign(commands.Cog):
@@ -132,13 +123,13 @@ class Campaign(commands.Cog):
         record = await ctx.db.fetchrow(query, campaign_id)
 
         if record is None:
-            if member == ctx.author:
-                await ctx.send('You did not set up a profile.' \
-                              f' If you want to input a switch friend code, type {ctx.prefix}profile switch 1234-5678-9012' \
-                              f' or check {ctx.prefix}help profile')
-            else:
-                await ctx.send('This member did not set up a profile.')
-            return
+            #if member == ctx.author:
+            #    await ctx.send('You did not set up a profile.' \
+            #                  f' If you want to input a switch friend code, type {ctx.prefix}profile switch 1234-5678-9012' \
+            #                  f' or check {ctx.prefix}help profile')
+            #else:
+            #    await ctx.send('This member did not set up a profile.')
+            #return
 
         # 0xF02D7D - Splatoon 2 Pink
         # 0x19D719 - Splatoon 2 Green
@@ -146,17 +137,20 @@ class Campaign(commands.Cog):
 
         keys = {
             'title': 'Title',
-            'gm': 'Gamemaster',
-            'url': 'Bridge Handout URL',
-            'key': 'Bridge Handout Key'
+            'url': 'Bridge Handout URL'
         }
 
         for key, value in keys.items():
             e.add_field(name=value, value=record[key] or 'N/A', inline=True)
 
-        # consoles = [f'__{v}__: {record[k]}' for k, v in keys.items() if record[k] is not None]
-        # e.add_field(name='Consoles', value='\n'.join(consoles) if consoles else 'None!', inline=False)
-        e.set_author(name=member.display_name, icon_url=member.avatar_url_as(format='png'))
+        url_key_value = "UNSET"
+        if record['key']:
+            url_key_value = "*******"
+        e.add_field(name='Bridge Handout Key', value=url_key_value, inline=True)
+
+        if record['gm']:
+            gm_user = ctx.bot.get_user_info(campaign_id)
+            e.set_author(name=gm_user.display_name, icon_url=gm_user.avatar_url_as(format='png'))
 
         await ctx.send(embed=e)
 
@@ -180,7 +174,7 @@ class Campaign(commands.Cog):
         await ctx.send('Updated campaign title.')
 
     @campaign.command()
-    async def gm(self, ctx, *, GM: valid_gm):
+    async def gm(self, ctx, *, GM: DisambiguateMember):
         """Sets the GM of a campaign."""
         await self.edit_fields(ctx, gm=GM)
         await ctx.send('Updated campaign gm.')
