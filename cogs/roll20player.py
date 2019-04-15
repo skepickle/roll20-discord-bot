@@ -70,7 +70,7 @@ def valid_roll20(argument):
         raise commands.BadArgument('An Roll20 user id must be an integer.')
     return val
 
-class Roll20Player(commands.Cog):
+class Roll20Player(commands.Cog, command_attrs=dict(cog_name=None)):
     def __init__(self, bot):
         self.bot = bot
 
