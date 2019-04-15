@@ -39,7 +39,7 @@ initial_extensions = (
     'cogs.config',
 #    'cogs.tournament',
 #    'cogs.dpy',
-    'cogs.player',
+    'cogs.roll20player',
     'cogs.campaign',
 )
 
