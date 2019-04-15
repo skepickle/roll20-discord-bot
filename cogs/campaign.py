@@ -122,7 +122,7 @@ class Campaign(commands.Cog):
         query = """SELECT * FROM roll20_campaigns WHERE id=$1;"""
         record = await ctx.db.fetchrow(query, campaign_id)
 
-        if record is None:
+        #if record is None:
             #if member == ctx.author:
             #    await ctx.send('You did not set up a profile.' \
             #                  f' If you want to input a switch friend code, type {ctx.prefix}profile switch 1234-5678-9012' \
