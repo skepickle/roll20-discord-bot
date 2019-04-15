@@ -5,6 +5,7 @@ Table players {
 
 Table campaigns {
   id    bigint [pk]
+  title varchar [not null]
   gm    bigint [ref: > players.id]
   url   varchar [not null]
   key   varchar [not null]

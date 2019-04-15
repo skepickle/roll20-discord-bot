@@ -6,18 +6,29 @@ from collections import defaultdict
 import discord
 import re
 
-class Campaigns(db.Table):
-    # this is the user_id
-    guild = db.Column(db.Integer)
-    gm = db.Column(db.Integer) # Discord name#discrim
+class Campaigns(db.Table, table_name='roll20_campaigns'):
+    id = db.Column(db.Integer(big=True), primary_key=True) # just an internal ID
+
+    title = db.Column(db.String) # Title of the Campaign
+
+    gm = db.Column(db.Integer(big=True)) # this is a Discord member id (snowflake)
 
     url = db.Column(db.String) # URL to bridge handout
     key = db.Column(db.String) # Encryption key for handout
 
-    id = db.Column(db.Integer(big=True), primary_key=True)
+class DisambiguateTitle(commands.Converter):
+    async def convert(self, ctx, argument):
+        query = """SELECT * FROM roll20_campaigns WHERE id=$1;"""
+        record = await ctx.db.fetchrow(query, argument)
 
-    # extra Splatoon data is stored here
-    # extra = db.Column(db.JSON, default="'{}'::jsonb", nullable=False)
+        if record is None:
+            query = """SELECT * FROM roll20_campaigns WHERE title=$1;"""
+            record = await ctx.db.fetchrow(query, argument)
+
+        if record is None:
+            raise commands.BadArgument(f'Could not find this campaign.') from None
+
+        return record[id]
 
 class DisambiguateMember(commands.IDConverter):
     async def convert(self, ctx, argument):
@@ -71,103 +82,27 @@ class DisambiguateMember(commands.IDConverter):
             raise commands.BadArgument("Could not found this member. Note this is case sensitive.")
         return result
 
+def valid_title(argument):
+    arg = argument.strip('"')
+    #TODO
+    return arg
+
+def valid_gm(argument):
+    arg = argument.strip('"')
+    #TODO
+    return arg
+
 def valid_url(argument):
     arg = argument.strip('"')
     #if len(arg) > 16:
     #    raise commands.BadArgument('An NNID has a maximum of 16 characters.')
     return arg
 
-#def valid_nnid(argument):
-#    arg = argument.strip('"')
-#    if len(arg) > 16:
-#        raise commands.BadArgument('An NNID has a maximum of 16 characters.')
-#    return arg
-
-_rank = re.compile(r'^(?P<mode>\w+(?:\s*\w+)?)\s*(?P<rank>[AaBbCcSsXx][\+-]?)\s*(?P<number>[0-9]{0,4})$')
-
-def valid_rank(argument, *, _rank=_rank):
-    m = _rank.match(argument.strip('"'))
-    if m is None:
-        raise commands.BadArgument('Could not figure out mode or rank.')
-
-    mode = m.group('mode')
-    valid = {
-        'zones': 'Splat Zones',
-        'splat zones': 'Splat Zones',
-        'sz': 'Splat Zones',
-        'zone': 'Splat Zones',
-        'splat': 'Splat Zones',
-        'tower': 'Tower Control',
-        'control': 'Tower Control',
-        'tc': 'Tower Control',
-        'tower control': 'Tower Control',
-        'rain': 'Rainmaker',
-        'rainmaker': 'Rainmaker',
-        'rain maker': 'Rainmaker',
-        'rm': 'Rainmaker',
-        'clam blitz': 'Clam Blitz',
-        'clam': 'Clam Blitz',
-        'blitz': 'Clam Blitz',
-        'cb': 'Clam Blitz',
-    }
-
-    try:
-        mode = valid[mode.lower()]
-    except KeyError:
-        raise commands.BadArgument(f'Unknown Splatoon 2 mode: {mode}') from None
-
-    rank = m.group('rank').upper()
-    if rank == 'S-':
-        rank = 'S'
-
-    number = m.group('number')
-    if number:
-        number = int(number)
-
-        if number and rank not in ('S+', 'X'):
-            raise commands.BadArgument('Only S+ or X can input numbers.')
-        if rank == 'S+' and number > 10:
-            raise commands.BadArgument('S+10 is the current cap.')
-
-    return mode, { 'rank': rank, 'number': number }
-
-def valid_squad(argument):
+def valid_key(argument):
     arg = argument.strip('"')
-    if len(arg) > 100:
-        raise commands.BadArgument('Squad name way too long. Keep it less than 100 characters.')
-
-    if arg.startswith('http'):
-        arg = f'<{arg}>'
+    #if len(arg) > 16:
+    #    raise commands.BadArgument('An NNID has a maximum of 16 characters.')
     return arg
-
-_friend_code = re.compile(r'^(?:(?:SW|3DS)[- _]?)?(?P<one>[0-9]{4})[- _]?(?P<two>[0-9]{4})[- _]?(?P<three>[0-9]{4})$')
-
-def valid_fc(argument, *, _fc=_friend_code):
-    fc = argument.upper().strip('"')
-    m = _fc.match(fc)
-    if m is None:
-        raise commands.BadArgument('Not a valid friend code!')
-
-    return '{one}-{two}-{three}'.format(**m.groupdict())
-
-class SplatoonWeapon(commands.Converter):
-    async def convert(self, ctx, argument):
-        cog = ctx.bot.get_cog('Splatoon')
-        if cog is None:
-            raise commands.BadArgument('Splatoon related commands seemingly disabled.')
-
-        query = argument.strip('"')
-        if len(query) < 4:
-            raise commands.BadArgument('Weapon name to query must be over 4 characters long.')
-
-        weapons = cog.get_weapons_named(query)
-
-        try:
-            weapon = await ctx.disambiguate(weapons, lambda w: w['name'])
-        except ValueError as e:
-            raise commands.BadArgument(str(e)) from None
-        else:
-            return weapon
 
 class Campaign(commands.Cog):
     def __init__(self, bot):
@@ -178,20 +113,23 @@ class Campaign(commands.Cog):
             await ctx.send(error)
 
     @commands.group(invoke_without_command=True)
-    async def campaign(self, ctx, *, member: DisambiguateMember = None):
+    async def campaign(self, ctx, *, campaign_id: DisambiguateTitle = None):
         """Manages a campaign.
 
         If you don't pass in a subcommand, it will do a lookup based on
-        the gamemaster passed in. If no gm is passed in, you will
-        get your own profile.
+        the title passed in. If no title is passed in, you will
+        get the campaign for the current guild or channel.
 
-        All commands will create a profile for you.
+        All commands will create a campaign if you are the guild owner.
         """
 
-        member = member or ctx.author
+        if campaign_id is None:
+            #TODO: Look for close title matches? Or other campaigns already in this guild?
+            await ctx.send('You did not specify a campaign')
+            return
 
-        query = """SELECT * FROM profiles WHERE id=$1;"""
-        record = await ctx.db.fetchrow(query, member.id)
+        query = """SELECT * FROM roll20_campaigns WHERE id=$1;"""
+        record = await ctx.db.fetchrow(query, campaign_id)
 
         if record is None:
             if member == ctx.author:
@@ -204,12 +142,13 @@ class Campaign(commands.Cog):
 
         # 0xF02D7D - Splatoon 2 Pink
         # 0x19D719 - Splatoon 2 Green
-        e = discord.Embed(colour=0x19D719)
+        e = discord.Embed(colour=0xF02D7D)
 
         keys = {
-            'fc_switch': 'Switch FC',
-            'nnid': 'Wii U NNID',
-            'fc_3ds': '3DS FC'
+            'title': 'Title',
+            'gm': 'Gamemaster',
+            'url': 'Bridge Handout URL',
+            'key': 'Bridge Handout Key'
         }
 
         for key, value in keys.items():
@@ -219,18 +158,6 @@ class Campaign(commands.Cog):
         # e.add_field(name='Consoles', value='\n'.join(consoles) if consoles else 'None!', inline=False)
         e.set_author(name=member.display_name, icon_url=member.avatar_url_as(format='png'))
 
-        extra = record['extra'] or {}
-        rank = extra.get('sp2_rank', {})
-        value = 'Unranked'
-        if rank:
-            value = '\n'.join(f'{mode}: {data["rank"]}{data["number"]}' for mode, data in rank.items())
-
-        e.add_field(name='Splatoon 2 Ranks', value=value)
-
-        weapon = extra.get('sp2_weapon')
-        e.add_field(name='Splatoon 2 Weapon', value=weapon and weapon['name'])
-
-        e.add_field(name='Squad', value=record['squad'] or 'N/A')
         await ctx.send(embed=e)
 
     async def edit_fields(self, ctx, **fields):
@@ -246,31 +173,37 @@ class Campaign(commands.Cog):
 
         await ctx.db.execute(query, ctx.author.id, *fields.values())
 
-    #@profile.command()
-    #async def nnid(self, ctx, *, NNID: valid_nnid):
-    #    """Sets the NNID portion of your profile."""
-    #    await self.edit_fields(ctx, nnid=NNID)
-    #    await ctx.send('Updated NNID.')
+    @campaign.command()
+    async def title(self, ctx, *, TITLE: valid_title):
+        """Sets the title of a campaign."""
+        await self.edit_fields(ctx, title=TITLE)
+        await ctx.send('Updated campaign title.')
 
-    #@profile.command()
-    #async def squad(self, ctx, *, squad: valid_squad):
-    #    """Sets the Splatoon 2 squad part of your profile."""
-    #    await self.edit_fields(ctx, squad=squad)
-    #    await ctx.send('Updated squad.')
+    @campaign.command()
+    async def gm(self, ctx, *, GM: valid_gm):
+        """Sets the GM of a campaign."""
+        await self.edit_fields(ctx, gm=GM)
+        await ctx.send('Updated campaign gm.')
 
-    #@profile.command(name='3ds')
-    #async def profile_3ds(self, ctx, *, fc: valid_fc):
-    #    """Sets the 3DS friend code of your profile."""
-    #    await self.edit_fields(ctx, fc_3ds=fc)
-    #    await ctx.send('Updated 3DS friend code.')
+    @campaign.command()
+    async def url(self, ctx, *, URL: valid_url):
+        """Sets the URL of the campaign's bridge handout in Roll20."""
+        await self.edit_fields(ctx, url=URL)
+        await ctx.send('Updated campaign bridge URL.')
 
-    #@profile.command()
+    @campaign.command()
+    async def key(self, ctx, *, KEY: valid_key):
+        """Sets the decryption key of the campaign's bridge handout in Roll20."""
+        await self.edit_fields(ctx, key=KEY)
+        await ctx.send('Updated campaign bridge key.')
+
+    #@campaign.command()
     #async def switch(self, ctx, *, fc: valid_fc):
     #    """Sets the Switch friend code of your profile."""
     #    await self.edit_fields(ctx, fc_switch=fc)
     #    await ctx.send('Updated Switch friend code.')
 
-    #@profile.command()
+    #@campaign.command()
     #async def weapon(self, ctx, *, weapon: SplatoonWeapon):
     #    """Sets the Splatoon 2 weapon part of your profile.
 
@@ -279,7 +212,7 @@ class Campaign(commands.Cog):
     #    If too many matches are found you'll be asked which weapon you meant.
     #    """
 
-    #    query = """INSERT INTO profiles (id, extra)
+    #    query = """INSERT INTO roll20_campaigns (id, extra)
     #               VALUES ($1, jsonb_build_object('sp2_weapon', $2::jsonb))
     #               ON CONFLICT (id) DO UPDATE
     #               SET extra = jsonb_set(profiles.extra, '{sp2_weapon}', $2::jsonb)
@@ -288,7 +221,7 @@ class Campaign(commands.Cog):
     #    await ctx.db.execute(query, ctx.author.id, weapon)
     #    await ctx.send(f'Successfully set weapon to {weapon["name"]}.')
 
-    #@profile.command(usage='<mode> <rank>')
+    #@campaign.command(usage='<mode> <rank>')
     #async def rank(self, ctx, *, argument: valid_rank):
     #    """Sets the Splatoon 2 rank part of your profile.
 
@@ -300,7 +233,7 @@ class Campaign(commands.Cog):
     #    - cb/clam/blitz/clam blitz
     #    """
 
-    #    query = """INSERT INTO profiles (id, extra)
+    #    query = """INSERT INTO roll20_campaigns (id, extra)
     #               VALUES ($1, $2::jsonb)
     #               ON CONFLICT (id) DO UPDATE
     #               SET extra =
@@ -315,30 +248,24 @@ class Campaign(commands.Cog):
     #    await ctx.db.execute(query, ctx.author.id, {mode: data})
     #    await ctx.send(f'Successfully set {mode} rank to {data["rank"]}{data["number"]}.')
 
-    @profile.command()
+    @campaign.command()
     async def delete(self, ctx, *, field=None):
-        """Deletes a field from your profile.
+        """Deletes a field from the campaign.
 
         The valid fields that could be deleted are:
 
-        - nnid
-        - switch
-        - 3ds
-        - squad
-        - weapon
-        - rank
-        - tower control rank
-        - splat zones rank
-        - rainmaker rank
+        - gm
+        - url
+        - key
 
-        Omitting a field will delete your entire profile.
+        Omitting a field will delete the entire campaign.
         """
 
         # simple case: delete entire profile
         if field is None:
             confirm = await ctx.prompt("Are you sure you want to delete your profile?")
             if confirm:
-                query = "DELETE FROM profiles WHERE id=$1;"
+                query = "DELETE FROM roll20_campaigns WHERE id=$1;"
                 await ctx.db.execute(query, ctx.author.id)
                 await ctx.send('Successfully deleted profile.')
             else:
@@ -347,138 +274,24 @@ class Campaign(commands.Cog):
 
         field = field.lower()
 
-        valid_fields = ( 'nnid', 'switch', '3ds', 'squad', 'weapon', 'rank',
-                         'tower control rank', 'splat zones rank', 'rainmaker rank')
+        valid_fields = ( 'title', 'gm', 'url', 'key' )
 
         if field not in valid_fields:
             return await ctx.send("I don't know what field you want me to delete here bub.")
 
         # a little intermediate case, basic field deletion:
         field_to_column = {
-            'nnid': 'nnid',
-            'switch': 'fc_switch',
-            '3ds': 'fc_3ds',
-            'squad': 'squad'
+            'title': 'title',
+            'gm': 'gm',
+            'url': 'url',
+            'key': 'key'
         }
 
         column = field_to_column.get(field)
         if column:
-            query = f"UPDATE profiles SET {column} = NULL WHERE id=$1;"
+            query = f"UPDATE roll20_campaigns SET {column} = NULL WHERE id=$1;"
             await ctx.db.execute(query, ctx.author.id)
             return await ctx.send(f'Successfully deleted {field} field.')
-
-        # whole key deletion
-        if field in ('weapon', 'rank'):
-            key = 'sp2_rank' if field == 'rank' else 'sp2_weapon'
-            query = "UPDATE profiles SET extra = extra - $1 WHERE id=$2;"
-            await ctx.db.execute(query, key, ctx.author.id)
-            return await ctx.send(f'Successfully deleted {field} field.')
-
-        # a little more complicated
-        mode = field.replace(' rank', '').title()
-        query = "UPDATE profiles SET extra = extra #- $1::text[] WHERE id=$2;"
-        key = ['sp2_rank', mode]
-        await ctx.db.execute(query, key, ctx.author.id)
-        await ctx.send(f'Successfully deleted {mode} ranking.')
-
-    @profile.command()
-    async def search(self, ctx, *, query):
-        """Searches profiles via either friend code, NNID, or Squad.
-
-        The query must be at least 3 characters long.
-
-        Results are returned matching whichever criteria is met.
-        """
-
-        # check if it's a valid friend code and search the database for it:
-
-        try:
-            value = valid_fc(query.upper())
-        except:
-            # invalid so let's search for NNID/Squad.
-            value = query
-            query = """SELECT format('<@%s>', id) AS "User", squad AS "Squad", fc_switch AS "Switch", nnid AS "NNID"
-                       FROM profiles
-                       WHERE squad ILIKE '%' || $1 || '%'
-                       OR nnid ILIKE '%' || $1 || '%'
-                       LIMIT 15;
-                    """
-        else:
-            query = """SELECT format('<@%s>', id) AS "User", squad AS "Squad", fc_switch AS "Switch", fc_3ds AS "3DS"
-                       FROM profiles
-                       WHERE fc_switch=$1 OR fc_3ds=$1
-                       LIMIT 15;
-                    """
-
-        records = await ctx.db.fetch(query, value)
-
-        if len(records) == 0:
-            return await ctx.send('No results found...')
-
-        e = discord.Embed(colour=0xF02D7D)
-
-        data = defaultdict(list)
-        for record in records:
-            for key, value in record.items():
-                data[key].append(value if value else 'N/A')
-
-        for key, value in data.items():
-            e.add_field(name=key, value='\n'.join(value))
-
-        # a hack to allow multiple inline fields
-        e.set_footer(text=str(Plural(record=len(records))) + '\u2003' * 60 + '\u200b')
-        await ctx.send(embed=e)
-
-    @profile.command()
-    async def stats(self, ctx):
-        """Retrieves some statistics on the profile database."""
-
-        query = "SELECT COUNT(*) FROM profiles;"
-
-        total = await ctx.db.fetchrow(query)
-        total = total[0]
-
-        # top weapons used
-        query = """SELECT extra #> '{sp2_weapon,name}' AS "Weapon",
-                          COUNT(*) AS "Total"
-                   FROM profiles
-                   WHERE extra #> '{sp2_weapon,name}' IS NOT NULL
-                   GROUP BY extra #> '{sp2_weapon,name}'
-                   ORDER BY "Total" DESC;
-                """
-
-        weapons = await ctx.db.fetch(query)
-        total_weapons = sum(r['Total'] for r in weapons)
-
-        e = discord.Embed(colour=0x19D719)
-        e.title = f'Statistics for {Plural(profile=total)}'
-
-        # top 3 weapons
-        value = f'*{total_weapons} players with weapons*\n' + \
-               '\n'.join(f'{r["Weapon"]} ({r["Total"]} players)' for r in weapons[:3])
-        e.add_field(name='Top Splatoon 2 Weapons', value=value, inline=False)
-
-        # get ranked data
-        for index, mode in enumerate(('Splat Zones', 'Tower Control', 'Rainmaker', 'Clam Blitz')):
-            query = f"""SELECT extra #> '{{sp2_rank,{mode},rank}}' AS "Rank",
-                               COUNT(*) AS "Total"
-                        FROM profiles
-                        WHERE extra #> '{{sp2_rank,{mode},rank}}' IS NOT NULL
-                        GROUP BY extra #> '{{sp2_rank,{mode},rank}}'
-                        ORDER BY "Total" DESC
-                     """
-
-            records = await ctx.db.fetch(query)
-            total = sum(r['Total'] for r in records)
-
-            value = f'*{total} players*\n' + '\n'.join(f'{r["Rank"]}: {r["Total"]} ({r["Total"] / total:.2%})' for r in records)
-            e.add_field(name=mode, value=value, inline=True)
-
-            # add some empty padding so the embed doesn't look ugly
-            if index % 2 == 1:
-                e.add_field(name='\u200b', value='\u200b', inline=True)
-
-        await ctx.send(embed=e)
 
 def setup(bot):
     bot.add_cog(Campaign(bot))
