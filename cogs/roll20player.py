@@ -78,17 +78,29 @@ class Roll20Player(commands.Cog, command_attrs=dict(hidden=True)):
         if isinstance(error, commands.BadArgument):
             await ctx.send(error)
 
-    @commands.group(invoke_without_command=True)
-    async def player(self, ctx, *, member: DisambiguateMember = None):
-        """Manages players.
+    @commands.group(name='player')
+    async def _player(self, ctx):
+        """Handles the player configuration."""
+        if ctx.invoked_subcommand is None:
+            await ctx.send_help('player')
 
-        If you don't pass in a subcommand, it will do a lookup based on
-        the member passed in. If no member is passed in, you will
-        get your own player.
-
-        All commands will create a player for you.
-        """
-
+    @_player.group()
+    async def _get(self, ctx, *, member: DisambiguateMember = None):
+        """Display player configuration."""
+        if ctx.guild is None:
+            if member is not None:
+                if (not ctx.bot.is_owner(ctx.author)):
+                    await ctx.send('You do not have permission to specify members on this command in DMs')
+                    return
+        else:
+            if member is not None:
+                if (ctx.author is not ctx.guild.owner):
+                    await ctx.send('You do not have permission to specify members on this command')
+                    return
+                if (member not in ctx.guild.members):
+                    await ctx.send('The player specified is not a member of this guild')
+                    return
+            
         member = member or ctx.author
 
         query = """SELECT * FROM roll20_players WHERE id=$1;"""
@@ -136,13 +148,13 @@ class Roll20Player(commands.Cog, command_attrs=dict(hidden=True)):
 
         await ctx.db.execute(query, ctx.author.id, *fields.values())
 
-    @player.command()
-    async def roll20(self, ctx, *, ROLL20: valid_roll20):
+    @_player.command()
+    async def set(self, ctx, *, ROLL20: valid_roll20):
         """Sets the Roll20 portion of your player."""
         await self.edit_fields(ctx, roll20=ROLL20)
         await ctx.send('Updated Roll20.')
 
-    @player.command()
+    @_player.command()
     async def delete(self, ctx, *, field=None):
         """Deletes a field from your player.
 
