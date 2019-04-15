@@ -6,7 +6,7 @@ from collections import defaultdict
 import discord
 import re
 
-class Players(db.Table, table_name='roll20_players'):
+class Roll20PlayersTable(db.Table, table_name='roll20_players'):
     id = db.Column(db.Integer(big=True), primary_key=True) # this is the Discord member id (snowflake)
     roll20 = db.Column(db.Integer(big=True))               # this is the Roll20 user id (integer)
 
@@ -70,7 +70,7 @@ def valid_roll20(argument):
         raise commands.BadArgument('An Roll20 user id must be an integer.')
     return val
 
-class Player(commands.Cog, command_attrs=dict(hidden=True)):
+class Roll20Player(commands.Cog, command_attrs=dict(hidden=True)):
     def __init__(self, bot):
         self.bot = bot
 
@@ -183,4 +183,4 @@ class Player(commands.Cog, command_attrs=dict(hidden=True)):
             return await ctx.send(f'Successfully deleted {field} field.')
 
 def setup(bot):
-    bot.add_cog(Player(bot))
+    bot.add_cog(Roll20Player(bot))
