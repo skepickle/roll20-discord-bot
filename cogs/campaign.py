@@ -158,7 +158,7 @@ class Campaign(commands.Cog):
         keys = ', '.join(fields)
         values = ', '.join(f'${2 + i}' for i in range(len(fields)))
 
-        query = f"""INSERT INTO campaigns (id, {keys})
+        query = f"""INSERT INTO roll20_campaigns (id, {keys})
                     VALUES ($1, {values})
                     ON CONFLICT (id)
                     DO UPDATE
