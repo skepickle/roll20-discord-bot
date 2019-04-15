@@ -40,6 +40,7 @@ initial_extensions = (
 #    'cogs.tournament',
 #    'cogs.dpy',
     'cogs.player',
+    'cogs.campaign',
 )
 
 def _prefix_callable(bot, msg):
