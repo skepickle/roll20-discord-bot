@@ -84,7 +84,7 @@ class Roll20Player(commands.Cog, command_attrs=dict(hidden=True)):
         if ctx.invoked_subcommand is None:
             await ctx.send_help('player')
 
-    @_player.group()
+    @_player.command(name='get')
     async def _get(self, ctx, *, member: DisambiguateMember = None):
         """Display player configuration."""
         if ctx.guild is None:
@@ -148,14 +148,14 @@ class Roll20Player(commands.Cog, command_attrs=dict(hidden=True)):
 
         await ctx.db.execute(query, ctx.author.id, *fields.values())
 
-    @_player.command()
-    async def set(self, ctx, *, ROLL20: valid_roll20):
+    @_player.command(name='set')
+    async def _set(self, ctx, *, ROLL20: valid_roll20):
         """Sets the Roll20 portion of your player."""
         await self.edit_fields(ctx, roll20=ROLL20)
         await ctx.send('Updated Roll20.')
 
-    @_player.command()
-    async def delete(self, ctx, *, field=None):
+    @_player.command(name='delete')
+    async def _delete(self, ctx, *, field=None):
         """Deletes a field from your player.
 
         The valid fields that could be deleted are:
