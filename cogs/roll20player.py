@@ -119,18 +119,21 @@ class Roll20Player(commands.Cog, name='Config'):
         # 0x19D719 - Splatoon 2 Green
         e = discord.Embed(colour=0xF02D7D)
 
-        keys = {
-            'roll20': 'Roll20 User ID'
-        }
+        #keys = {
+        #    'roll20': 'Roll20 User ID'
+        #}
 
-        for key, value in keys.items():
-            e.add_field(name=value, value=record[key] or 'N/A', inline=True)
+        #for key, value in keys.items():
+        #    e.add_field(name=value, value=record[key] or 'N/A', inline=True)
 
         # consoles = [f'__{v}__: {record[k]}' for k, v in keys.items() if record[k] is not None]
         # e.add_field(name='Consoles', value='\n'.join(consoles) if consoles else 'None!', inline=False)
+
         if (record['roll20']):
+            e.add_field(name='Roll20 User ID', value='Set', inline=True)
             e.set_author(name=member.display_name, url='https://app.roll20.net/users/{}'.format(record['roll20']), icon_url=member.avatar_url_as(format='png'))
         else:
+            e.add_field(name='Roll20 User ID', value='Unset', inline=True)
             e.set_author(name=member.display_name, icon_url=member.avatar_url_as(format='png'))
 
         await ctx.send(embed=e)
@@ -148,8 +151,13 @@ class Roll20Player(commands.Cog, name='Config'):
 
         await ctx.db.execute(query, ctx.author.id, *fields.values())
 
-    @_player.command(name='set')
-    async def _set(self, ctx, *, ROLL20: valid_roll20):
+    @_player.group(name='set')
+    async def _set(self, ctx):
+        """Set options of player."""
+        pass
+
+    @_player.command(name='roll20')
+    async def _set_roll20(self, ctx, *, ROLL20: valid_roll20):
         """Sets the Roll20 portion of your player."""
         await self.edit_fields(ctx, roll20=ROLL20)
         await ctx.send('Updated Roll20.')
