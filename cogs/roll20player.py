@@ -130,10 +130,10 @@ class Roll20Player(commands.Cog, name='Config'):
         # e.add_field(name='Consoles', value='\n'.join(consoles) if consoles else 'None!', inline=False)
 
         if (record['roll20']):
-            e.add_field(name='Roll20 User ID', value='Set', inline=True)
+            e.add_field(name='Roll20 User ID', value='Set', inline=False)
             e.set_author(name=member.display_name, url='https://app.roll20.net/users/{}'.format(record['roll20']), icon_url=member.avatar_url_as(format='png'))
         else:
-            e.add_field(name='Roll20 User ID', value='Unset', inline=True)
+            e.add_field(name='Roll20 User ID', value='Unset', inline=False)
             e.set_author(name=member.display_name, icon_url=member.avatar_url_as(format='png'))
 
         await ctx.send(embed=e)
