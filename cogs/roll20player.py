@@ -156,7 +156,7 @@ class Roll20Player(commands.Cog, name='Config'):
         """Set options of player."""
         pass
 
-    @_player.command(name='roll20')
+    @_set.command(name='roll20')
     async def _set_roll20(self, ctx, *, ROLL20: valid_roll20):
         """Sets the Roll20 portion of your player."""
         await self.edit_fields(ctx, roll20=ROLL20)
