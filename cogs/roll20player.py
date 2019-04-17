@@ -101,7 +101,7 @@ class Roll20Player(commands.Cog, name='Config'):
         """
         if ctx.guild is None:
             if member is not None:
-                if (not ctx.bot.is_owner(ctx.author)):
+                if (not await ctx.bot.is_owner(ctx.author)):
                     await ctx.send('You do not have permission to specify members on this command in DMs')
                     return
         else:
