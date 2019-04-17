@@ -154,7 +154,8 @@ class Roll20Player(commands.Cog, name='Config'):
     @_player.group(name='set')
     async def _set(self, ctx):
         """Set options of player."""
-        pass
+        if ctx.invoked_subcommand is None:
+            await ctx.send_help('set')
 
     @_set.command(name='roll20')
     async def _set_roll20(self, ctx, *, ROLL20: valid_roll20):
