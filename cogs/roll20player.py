@@ -130,7 +130,7 @@ class Roll20Player(commands.Cog, name='Config'):
         # e.add_field(name='Consoles', value='\n'.join(consoles) if consoles else 'None!', inline=False)
 
         if (record['roll20']):
-            e.add_field(name='Roll20 User ID', value='Set', inline=False)
+            //e.add_field(name='Roll20 User ID', value='Set', inline=False)
             e.set_author(name=member.display_name, url='https://app.roll20.net/users/{}'.format(record['roll20']), icon_url=member.avatar_url_as(format='png'))
         else:
             e.add_field(name='Roll20 User ID', value='Unset', inline=False)
@@ -155,7 +155,7 @@ class Roll20Player(commands.Cog, name='Config'):
     async def _set(self, ctx):
         """Set options of player."""
         if ctx.invoked_subcommand is None:
-            await ctx.send_help(_set)
+            await ctx.send_help(_player)
 
     @_set.command(name='roll20')
     async def _set_roll20(self, ctx, *, ROLL20: valid_roll20):
