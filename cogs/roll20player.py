@@ -83,9 +83,6 @@ class Roll20Player(commands.Cog, name='Config'):
         """Handles players' information.
 
         This is information about IRL players.
-
-        Currently valid fields:
-          - roll20    : Roll20 User ID #
         """
         if ctx.invoked_subcommand is None:
             await ctx.send_help('player')
@@ -145,6 +142,7 @@ class Roll20Player(commands.Cog, name='Config'):
                               url= 'https://app.roll20.net/users/{}'.format(record['roll20']),
                               description = "Roll20 User ID is set.",
                               color=0xF02D7D)
+            e.set_image(member.avatar_url_as(format='png'))
             #e.title = member.display_name
             #e.url = 'https://app.roll20.net/users/{}'.format(record['roll20'])
             #e.description = "Roll20 User ID is set."
