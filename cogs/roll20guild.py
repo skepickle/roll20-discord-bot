@@ -32,17 +32,25 @@ class Roll20Guild(commands.Cog, name='Config'):
         if isinstance(error, commands.BadArgument):
             await ctx.send(error)
 
-    @commands.group(name='guild', invoke_without_command=True)
-    async def _guild(self, ctx, *, guild: DisambiguateGuild = None):
-        """Manages guilds.
+    @commands.group(name='guild')
+    async def _guild(self, ctx):
+        """Handles guild information.
 
-        If you don't pass in a subcommand, it will do a lookup based on
-        the guild of the context. If no guild is present in context,
-        bot-admins can get a list of guilds.
+        This is information about Discord guilds.
 
-        All commands will create a guild for bot-admin or guild owner.
+        Currently valid fields:
+          - campaign    : Campaign
         """
+        if ctx.invoked_subcommand is None:
+            await ctx.send_help('guild')
 
+    @_guild.command(name='get')
+    async def _get(self, ctx, *, guild: DisambiguateGuild = None):
+        """Display guild information.
+        
+        If executed by guild owner, guild
+        may be passed in as an argument.
+        """
         guild = guild or ctx.guild
 
         query = """SELECT * FROM roll20_guilds WHERE id=$1;"""

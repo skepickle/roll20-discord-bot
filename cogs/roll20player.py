@@ -99,20 +99,19 @@ class Roll20Player(commands.Cog, name='Config'):
         If executed by guild owner, a member
         may be passed in as an argument.
         """
-        if ctx.guild is None:
-            if member is not None:
+        if member is not None:
+            if ctx.guild is None:
                 if (not await ctx.bot.is_owner(ctx.author)):
                     await ctx.send('You do not have permission to specify members on this command in DMs')
                     return
-        else:
-            if member is not None:
+            else:
                 if (ctx.author is not ctx.guild.owner):
                     await ctx.send('You do not have permission to specify members on this command')
                     return
                 if (member not in ctx.guild.members):
                     await ctx.send('The player specified is not a member of this guild')
                     return
-            
+
         member = member or ctx.author
 
         query = """SELECT * FROM roll20_players WHERE id=$1;"""
@@ -120,16 +119,16 @@ class Roll20Player(commands.Cog, name='Config'):
 
         if record is None:
             if member == ctx.author:
-                await ctx.send('You did not set up a player.' \
-                              f' If you want to input a Roll20 user ID, type {ctx.prefix}player roll20 012345' \
-                              f' or check {ctx.prefix}help player')
+                await ctx.send('You did not set up a player record.' \
+                              f' If you want to create a record, type {ctx.prefix}player set' \
+                              f' or check {ctx.prefix}help player set')
             else:
-                await ctx.send('This member did not set up a player.')
+                await ctx.send('This member did not create a player record.')
             return
 
         # 0xF02D7D - Splatoon 2 Pink
         # 0x19D719 - Splatoon 2 Green
-        e = discord.Embed(color=0xF02D7D)
+        e = None
 
         #keys = {
         #    'roll20': 'Roll20 User ID'
@@ -142,14 +141,21 @@ class Roll20Player(commands.Cog, name='Config'):
         # e.add_field(name='Consoles', value='\n'.join(consoles) if consoles else 'None!', inline=False)
 
         if (record['roll20']):
-            e.title = member.display_name
-            e.url = 'https://app.roll20.net/users/{}'.format(record['roll20'])
-            e.description = "Roll20 User ID is set."
+            discord.Embed(title=member.display_name,
+                          url= 'https://app.roll20.net/users/{}'.format(record['roll20']),
+                          description = "Roll20 User ID is set.",
+                          color=0xF02D7D)
+            #e.title = member.display_name
+            #e.url = 'https://app.roll20.net/users/{}'.format(record['roll20'])
+            #e.description = "Roll20 User ID is set."
             #e.add_field(name='Roll20 User ID', value='Set', inline=True)
             #e.set_author(name=member.display_name, url='https://app.roll20.net/users/{}'.format(record['roll20']), icon_url=member.avatar_url_as(format='png'))
         else:
-            e.title = member.display_name
-            e.description = "Roll20 User ID is not set."
+            discord.Embed(title = member.display_name,
+                          description = "Roll20 User ID is not set.",
+                          color=0xF02D7D)
+            #e.title = member.display_name
+            #e.description = "Roll20 User ID is not set."
             #e.add_field(name='Roll20 User ID', value='Unset', inline=True)
             #e.set_author(name=member.display_name, icon_url=member.avatar_url_as(format='png'))
 
