@@ -90,9 +90,9 @@ class Roll20Player(commands.Cog, name='Config'):
     @_player.command(name='get')
     async def _get(self, ctx, *, member: DisambiguateMember = None):
         """Display player information.
-        
+
         This shows information to the player.
-        
+
         If executed by guild owner, a member
         may be passed in as an argument.
         """
@@ -123,39 +123,17 @@ class Roll20Player(commands.Cog, name='Config'):
                 await ctx.send('This member did not create a player record.')
             return
 
-        # 0xF02D7D - Splatoon 2 Pink
-        # 0x19D719 - Splatoon 2 Green
         e = None
 
-        #keys = {
-        #    'roll20': 'Roll20 User ID'
-        #}
-
-        #for key, value in keys.items():
-        #    e.add_field(name=value, value=record[key] or 'N/A', inline=True)
-
-        # consoles = [f'__{v}__: {record[k]}' for k, v in keys.items() if record[k] is not None]
-        # e.add_field(name='Consoles', value='\n'.join(consoles) if consoles else 'None!', inline=False)
-
         if (record['roll20']):
-            e = discord.Embed(title=member.display_name,
-                              url= 'https://app.roll20.net/users/{}'.format(record['roll20']),
-                              description = "Roll20 User ID is set.",
+            e = discord.Embed(description = "Roll20 User ID is set.",
                               color=0xF02D7D)
-            e.set_image(url=member.avatar_url_as(format='png'))
-            #e.title = member.display_name
-            #e.url = 'https://app.roll20.net/users/{}'.format(record['roll20'])
-            #e.description = "Roll20 User ID is set."
-            #e.add_field(name='Roll20 User ID', value='Set', inline=True)
             e.set_author(name=member.display_name, url='https://app.roll20.net/users/{}'.format(record['roll20']), icon_url=member.avatar_url_as(format='png'))
         else:
             e = discord.Embed(title = member.display_name,
                               description = "Roll20 User ID is not set.",
                               color=0xF02D7D)
-            #e.title = member.display_name
-            #e.description = "Roll20 User ID is not set."
-            #e.add_field(name='Roll20 User ID', value='Unset', inline=True)
-            #e.set_author(name=member.display_name, icon_url=member.avatar_url_as(format='png'))
+            e.set_author(name=member.display_name, icon_url=member.avatar_url_as(format='png'))
 
         await ctx.send(embed=e)
 
@@ -229,6 +207,30 @@ class Roll20Player(commands.Cog, name='Config'):
             query = f"UPDATE roll20_players SET {column} = NULL WHERE id=$1;"
             await ctx.db.execute(query, ctx.author.id)
             return await ctx.send(f'Successfully deleted {field} field.')
+
+    @_player.command(name='delete')
+    async def _delete(self, ctx, *, member: DisambiguateMember = None):
+        """Delete your entire player record, after confirmation.
+        """
+        if (not await ctx.bot.is_owner(ctx.author)):
+            if member is not None:
+                await ctx.send('You do not have permission to specify members on this command')
+                return
+
+        prompt_str = "Are you sure you want to delete this player record?"
+        if member is None:
+            prompt_str = "Are you sure you want to delete your player record?"
+            
+        member = member or ctx.author
+
+        confirm = await ctx.prompt(prompt_str)
+        if confirm:
+            query = "DELETE FROM roll20_players WHERE id=$1;"
+            await ctx.db.execute(query, ctx.author.id)
+            await ctx.send('Successfully deleted player.')
+        else:
+            await ctx.send('Aborting player deletion.')
+        return
 
 def setup(bot):
     bot.add_cog(Roll20Player(bot))
