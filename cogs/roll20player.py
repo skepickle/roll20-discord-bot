@@ -82,8 +82,7 @@ class Roll20Player(commands.Cog, name='Config'):
     async def _player(self, ctx):
         """Handles players' information.
 
-        This is information about IRL players.
-        """
+        This is information about IRL players."""
         if ctx.invoked_subcommand is None:
             await ctx.send_help('player')
 
@@ -94,8 +93,7 @@ class Roll20Player(commands.Cog, name='Config'):
         This shows information to the player.
 
         If executed by guild owner, a member
-        may be passed in as an argument.
-        """
+        may be passed in as an argument."""
         if member is not None:
             if ctx.guild is None:
                 if (not await ctx.bot.is_owner(ctx.author)):
@@ -156,8 +154,7 @@ class Roll20Player(commands.Cog, name='Config'):
  
         The valid fields that could be set are:
 
-        - roll20
-        """
+        - roll20"""
         if ctx.invoked_subcommand is None:
             await ctx.send_help('player')
 
@@ -173,8 +170,7 @@ class Roll20Player(commands.Cog, name='Config'):
 
         The valid fields that could be unset are:
 
-        - roll20
-        """
+        - roll20"""
 
         # simple case: delete entire player
         if field is None:
@@ -200,8 +196,7 @@ class Roll20Player(commands.Cog, name='Config'):
 
     @_player.command(name='delete')
     async def _delete(self, ctx, *, member: DisambiguateMember = None):
-        """Delete your entire player record, after confirmation.
-        """
+        """Delete your entire player record."""
         if (not await ctx.bot.is_owner(ctx.author)):
             if member is not None:
                 await ctx.send('You do not have permission to specify members on this command')
