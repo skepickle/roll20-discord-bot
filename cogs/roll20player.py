@@ -168,34 +168,24 @@ class Roll20Player(commands.Cog, name='Config'):
         await ctx.send('Updated Roll20.')
 
     @_player.command(name='unset')
-    async def _unset(self, ctx, *, field=None):
+    async def _unset(self, ctx, *, field):
         """Unsets a field from your player.
 
         The valid fields that could be unset are:
 
         - roll20
-
-        Omitting a field name will delete your
-        entire player record, after confirmation.
         """
 
         # simple case: delete entire player
         if field is None:
-            confirm = await ctx.prompt("Are you sure you want to delete your player record?")
-            if confirm:
-                query = "DELETE FROM roll20_players WHERE id=$1;"
-                await ctx.db.execute(query, ctx.author.id)
-                await ctx.send('Successfully deleted player.')
-            else:
-                await ctx.send('Aborting player deletion.')
-            return
+            return await ctx.send("A field must be specified.")
 
         field = field.lower()
 
         valid_fields = ( 'roll20' )
 
         if field not in valid_fields:
-            return await ctx.send("I don't know what field you want me to delete here bub.")
+            return await ctx.send("I don't know what field you want me to unset.")
 
         # a little intermediate case, basic field deletion:
         field_to_column = {
