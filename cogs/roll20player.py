@@ -71,7 +71,7 @@ def valid_roll20(argument):
   try:
     val = int(str(arg))
   except ValueError:
-    raise commands.BadArgument('An Roll20 user id must be an integer.')
+    raise commands.BadArgument('A Roll20 user id must be an integer: {}'.format(argument))
   return val
 
 class Roll20Player(commands.Cog, name='Config'):
