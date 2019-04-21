@@ -166,16 +166,18 @@ class Roll20Player(commands.Cog, name='Config'):
       await ctx.send_help('player')
 
   @_set.command(name='roll20')
-  async def _set_roll20(self, ctx, *, ROLL20: valid_roll20, member: DisambiguateMember = None):
+  async def _set_roll20(self, ctx, *, id, member: DisambiguateMember = None):
     """Sets the Roll20 portion of your player."""
     if member is not None:
       if (not await ctx.bot.is_owner(ctx.author)):
         await ctx.send('You do not have permission to specify members on this command')
         return
 
+    id = valid_roll20(id)
+
     member = member or ctx.author
 
-    await self.edit_fields(ctx, member, roll20=ROLL20)
+    await self.edit_fields(ctx, member, roll20=id)
     await ctx.send('Updated Roll20.')
 
   @_player.command(name='unset')
