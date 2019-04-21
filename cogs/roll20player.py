@@ -15,8 +15,7 @@ class Roll20PlayersTable(db.Table, table_name='roll20_players'):
 class DisambiguateMember(commands.IDConverter):
   async def convert(self, ctx, argument):
     # check if it's a user ID or mention
-    match = self._get_id_match(argument) or
-            re.match(r'<@!?([0-9]+)>$', argument)
+    match = self._get_id_match(argument) or re.match(r'<@!?([0-9]+)>$', argument)
 
     if match is not None:
       # exact matches, like user ID + mention should search
