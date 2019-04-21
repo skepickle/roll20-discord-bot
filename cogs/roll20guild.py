@@ -15,14 +15,21 @@ class DisambiguateGuild(commands.Converter):
         # check if it's a guild ID
         match = ctx.bot.get_guild(argument)
 
-        if match is None:
-            raise commands.BadArgument("Could not found this guild.")
+        if match is not None:
+            return match
 
-        return match
+        #TODO Search ctx.bot.guilds[*].name for matches with argument
+
+        if match is None:
+            raise commands.BadArgument("Could not find this guild.")
 
 def valid_campaign(argument):
     arg = argument.strip('"')
-    return arg
+    try:
+       val = int(str(arg))
+    except ValueError:
+        raise commands.BadArgument('A campaign ID must be an integer.')
+    return val
 
 class Roll20Guild(commands.Cog, name='Config'):
     def __init__(self, bot):
@@ -39,8 +46,7 @@ class Roll20Guild(commands.Cog, name='Config'):
         This is information about Discord guilds.
 
         Currently valid fields:
-          - campaign    : Campaign
-        """
+          - campaign    : Campaign"""
         if ctx.invoked_subcommand is None:
             await ctx.send_help('guild')
 
@@ -49,8 +55,7 @@ class Roll20Guild(commands.Cog, name='Config'):
         """Display guild information.
         
         If executed by guild owner, guild
-        may be passed in as an argument.
-        """
+        may be passed in as an argument."""
         guild = guild or ctx.guild
 
         query = """SELECT * FROM roll20_guilds WHERE id=$1;"""
@@ -105,8 +110,7 @@ class Roll20Guild(commands.Cog, name='Config'):
 
         - campaign
 
-        Omitting a field will delete your entire player.
-        """
+        Omitting a field will delete your entire player."""
 
         if ctx.guild is None:
             # Then command is being executed in direct-message. Check to see if auther is bot-admin.

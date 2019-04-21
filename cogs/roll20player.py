@@ -87,6 +87,7 @@ class Roll20Player(commands.Cog, name='Config'):
     """Handles players' information.
 
     This is information about IRL players."""
+
     if ctx.invoked_subcommand is None:
       await ctx.send_help('player')
 
@@ -98,6 +99,7 @@ class Roll20Player(commands.Cog, name='Config'):
 
     If executed by guild owner, a member
     may be passed in as an argument."""
+
     if member is not None:
       if ctx.guild is None:
         if (not await ctx.bot.is_owner(ctx.author)):
@@ -162,18 +164,18 @@ class Roll20Player(commands.Cog, name='Config'):
     The valid fields that could be set are:
 
     - roll20"""
+
     if ctx.invoked_subcommand is None:
       await ctx.send_help('player')
 
   @_set.command(name='roll20')
   async def _set_roll20(self, ctx, id: valid_roll20, *, member: DisambiguateMember = None):
     """Sets the Roll20 portion of your player."""
+
     if member is not None:
       if (not await ctx.bot.is_owner(ctx.author)):
         await ctx.send('You do not have permission to specify members on this command')
         return
-
-    #id = valid_roll20(id)
 
     member = member or ctx.author
 
@@ -181,14 +183,20 @@ class Roll20Player(commands.Cog, name='Config'):
     await ctx.send('Updated Roll20.')
 
   @_player.command(name='unset')
-  async def _unset(self, ctx, *, field):
+  async def _unset(self, ctx, field, *, member: DisambiguateMember = None):
     """Unsets a field from your player.
 
     The valid fields that could be unset are:
 
     - roll20"""
 
-    # simple case: delete entire player
+    if member is not None:
+      if (not await ctx.bot.is_owner(ctx.author)):
+        await ctx.send('You do not have permission to specify members on this command')
+        return
+
+    member = member or ctx.author
+
     if field is None:
       return await ctx.send("A field must be specified.")
 
@@ -207,7 +215,7 @@ class Roll20Player(commands.Cog, name='Config'):
     column = field_to_column.get(field)
     if column:
       query = f"UPDATE roll20_players SET {column} = NULL WHERE id=$1;"
-      await ctx.db.execute(query, ctx.author.id)
+      await ctx.db.execute(query, member.id)
       return await ctx.send(f'Successfully deleted {field} field.')
 
   @_player.command(name='delete')
