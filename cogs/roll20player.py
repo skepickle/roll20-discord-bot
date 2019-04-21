@@ -142,7 +142,7 @@ class Roll20Player(commands.Cog, name='Config'):
 
     await ctx.send(embed=e)
 
-  async def edit_fields(self, ctx, **fields, member: DisambiguateMember):
+  async def edit_fields(self, ctx, member: DisambiguateMember, **fields):
     keys = ', '.join(fields)
     values = ', '.join(f'${2 + i}' for i in range(len(fields)))
 
@@ -175,7 +175,7 @@ class Roll20Player(commands.Cog, name='Config'):
 
     member = member or ctx.author
 
-    await self.edit_fields(ctx, roll20=ROLL20)
+    await self.edit_fields(ctx, member, roll20=ROLL20)
     await ctx.send('Updated Roll20.')
 
   @_player.command(name='unset')
