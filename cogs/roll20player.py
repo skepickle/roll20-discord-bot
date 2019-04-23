@@ -93,11 +93,13 @@ class Roll20Player(commands.Cog, name='Config'):
 
   @_player.command(name="list")
   async def _player_list(self, ctx):
+    """Administrator command to list players."""
     if (not await ctx.bot.is_owner(ctx.author)):
       await ctx.send('You do not have permission to run this command.')
       return
     if ctx.guild is not None:
       await ctx.send('This command must be run from DM.')
+      return
 
     query = """SELECT * FROM roll20_players;"""
     records = await ctx.db.fetch(query)
@@ -181,9 +183,8 @@ class Roll20Player(commands.Cog, name='Config'):
   async def _set(self, ctx, field, value, *, member: DisambiguateMember = None):
     """Sets a player's field value.
 
-       The valid fields that can be set are:
-
-       - roll20"""
+    The valid fields that can be set are:
+    - roll20"""
 
     if member is not None:
       if (not await ctx.bot.is_owner(ctx.author)):
@@ -233,7 +234,6 @@ class Roll20Player(commands.Cog, name='Config'):
     """Unsets a player's field value.
 
     The valid fields that could be unset are:
-
     - roll20"""
 
     if member is not None:
