@@ -92,7 +92,7 @@ class Roll20Player(commands.Cog, name='Config'):
       await ctx.send_help('player')
 
   @_player.command(name='get')
-  async def _get(self, ctx, *, member: DisambiguateMember = None):
+  async def _player_get(self, ctx, *, member: DisambiguateMember = None):
     """Display player information.
 
     This shows information to the player.
@@ -144,29 +144,33 @@ class Roll20Player(commands.Cog, name='Config'):
 
     await ctx.send(embed=e)
 
-  async def edit_fields(self, ctx, member: DisambiguateMember, **fields):
-    keys = ', '.join(fields)
-    values = ', '.join(f'${2 + i}' for i in range(len(fields)))
+  #async def edit_fields(self, ctx, member: DisambiguateMember, **fields):
+  #  keys = ', '.join(fields)
+  #  values = ', '.join(f'${2 + i}' for i in range(len(fields)))
 
-    query = f"""INSERT INTO roll20_players (id, {keys})
-                VALUES ($1, {values})
-                ON CONFLICT (id)
-                DO UPDATE
-                SET ({keys}) = ROW({values});
-             """
+  #  query = f"""INSERT INTO roll20_players (id, {keys})
+  #              VALUES ($1, {values})
+  #              ON CONFLICT (id)
+  #              DO UPDATE
+  #              SET ({keys}) = ROW({values});
+  #           """
 
-    await ctx.db.execute(query, member.id, *fields.values())
+  #  await ctx.db.execute(query, member.id, *fields.values())
 
-  @_player.group(name='set')
-  async def _set(self, ctx):
-    """Sets a player's field value."""
+  #@_player.group(name='set')
+  #async def _set(self, ctx):
+  #  """Sets a player's field value."""
 
-    if ctx.invoked_subcommand is None:
-      await ctx.send_help('set')
+  #  if ctx.invoked_subcommand is None:
+  #    await ctx.send_help('set')
 
-  @_set.command(name='roll20')
-  async def _set_roll20(self, ctx, id: valid_roll20, *, member: DisambiguateMember = None):
-    """Sets the Roll20 portion of your player."""
+  @_player.command(name='set')
+  async def _set(self, ctx, field, value, *, member: DisambiguateMember = None):
+    """Sets a player's field value.
+
+       The valid fields that can be set are:
+
+       - roll20"""
 
     if member is not None:
       if (not await ctx.bot.is_owner(ctx.author)):
@@ -175,12 +179,45 @@ class Roll20Player(commands.Cog, name='Config'):
 
     member = member or ctx.author
 
-    await self.edit_fields(ctx, member, roll20=id)
-    await ctx.send('Updated Roll20.')
+    if field is None:
+      return await ctx.send("A field must be specified.")
+
+    if value is None:
+      return await ctx.send("A value must be specified.")
+
+    field = field.lower()
+    value = value.strip('"')
+
+    valid_fields = ( 'roll20' )
+
+    if field not in valid_fields:
+      return await ctx.send("I don't know what field you want me to set.")
+
+    field_to_column = {
+      'roll20': 'roll20'
+    }
+
+    column = field_to_column.get(field)
+    if column:
+      if column == 'roll20':
+        val = value
+        try:
+          value = int(str(value))
+        except ValueError:
+          raise commands.BadArgument('A Roll20 user id must be an integer: {}'.format(val))
+
+      query = f"""INSERT INTO roll20_players (id, {column})
+                VALUES ($1, {value})
+                ON CONFLICT (id)
+                DO UPDATE
+                SET ({column}) = ROW({value});
+             """
+      await ctx.db.execute(query, member.id)
+      return await ctx.send('Successfully set {field} field to "{value}".')
 
   @_player.command(name='unset')
   async def _unset(self, ctx, field, *, member: DisambiguateMember = None):
-    """Unsets a field from your player.
+    """Unsets a player's field value.
 
     The valid fields that could be unset are:
 
@@ -203,7 +240,6 @@ class Roll20Player(commands.Cog, name='Config'):
     if field not in valid_fields:
       return await ctx.send("I don't know what field you want me to unset.")
 
-    # a little intermediate case, basic field deletion:
     field_to_column = {
       'roll20': 'roll20'
     }
@@ -212,7 +248,7 @@ class Roll20Player(commands.Cog, name='Config'):
     if column:
       query = f"UPDATE roll20_players SET {column} = NULL WHERE id=$1;"
       await ctx.db.execute(query, member.id)
-      return await ctx.send(f'Successfully deleted {field} field.')
+      return await ctx.send(f'Successfully unset {field} field.')
 
   @_player.command(name='delete')
   async def _delete(self, ctx, *, member: DisambiguateMember = None):
