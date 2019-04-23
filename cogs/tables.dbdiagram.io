@@ -3,20 +3,14 @@ Table players {
   roll20  bigint
 }
 
-Table campaigns {
-  id    bigint [pk]
-  title varchar [not null]
-  gm    bigint [ref: > players.id]
-  url   varchar [not null]
-  key   varchar [not null]
-}
-
 Table guilds {
-  id       bigint [pk]
-  campaign bigint [ref: > campaigns.id]
+  id      bigint [pk]
+  gm      bigint [ref: > players.id]
+  url     varchar [not null]
+  key     varchar [not null]
 }
 
 Table channels {
   id       bigint [pk]
-  campaign bigint [ref: > campaigns.id]
+  gm       bigint [ref: > player.id]
 }
