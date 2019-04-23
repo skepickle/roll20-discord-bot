@@ -157,7 +157,7 @@ class Roll20Player(commands.Cog, name='Config'):
 
     await ctx.db.execute(query, member.id, *fields.values())
 
-  @_player.group(name='set')
+  @_player.group(name='set', invoke_without_command=True)
   async def _set(self, ctx):
     """Sets a player's field value.
  
@@ -166,7 +166,7 @@ class Roll20Player(commands.Cog, name='Config'):
     - roll20"""
 
     if ctx.invoked_subcommand is None:
-      await ctx.send_help('player')
+      await ctx.send_help('set')
 
   @_set.command(name='roll20')
   async def _set_roll20(self, ctx, id: valid_roll20, *, member: DisambiguateMember = None):
