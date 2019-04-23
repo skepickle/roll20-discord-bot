@@ -91,6 +91,19 @@ class Roll20Player(commands.Cog, name='Config'):
     if ctx.invoked_subcommand is None:
       await ctx.send_help('player')
 
+  @_player_list(name="list")
+  async def _player_list(self, ctx):
+    if (not await ctx.bot.is_owner(ctx.author)):
+      await ctx.send('You do not have permission to run this command.')
+      return
+    if ctx.guild is not None:
+      await ctx.send('This command must be run from DM.')
+
+    query = """SELECT * FROM roll20_players;"""
+    records = await ctx.db.fetch(query)
+    print(records)
+    return
+
   @_player.command(name='get')
   async def _player_get(self, ctx, *, member: DisambiguateMember = None):
     """Display player information.
@@ -213,7 +226,7 @@ class Roll20Player(commands.Cog, name='Config'):
                 SET ({column}) = ROW({value});
              """
       await ctx.db.execute(query, member.id)
-      return await ctx.send('Successfully set {field} field to "{value}".')
+      return await ctx.send(f'Successfully set {field} field to "{value}".')
 
   @_player.command(name='unset')
   async def _unset(self, ctx, field, *, member: DisambiguateMember = None):
