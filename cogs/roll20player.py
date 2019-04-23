@@ -91,7 +91,7 @@ class Roll20Player(commands.Cog, name='Config'):
     if ctx.invoked_subcommand is None:
       await ctx.send_help('player')
 
-  @_player_list(name="list")
+  @_player.command(name="list")
   async def _player_list(self, ctx):
     if (not await ctx.bot.is_owner(ctx.author)):
       await ctx.send('You do not have permission to run this command.')
